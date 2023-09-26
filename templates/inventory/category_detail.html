@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <main>
+        <div class="container-fluid site-width">
+            <!-- START: Breadcrumbs -->
+            <div class="row">
+                <div class="col-12 mt-3">
+                    <div class="sub-header mt-3 py-3 align-self-center d-sm-flex w-100 rounded">
+                        <div class="w-sm-100 mr-auto"><h4 class="mb-0">Category Management</h4></div>
+
+                        <ol class="breadcrumb bg-transparent align-self-center m-0 p-0">
+                            <li class="breadcrumb-item">Home</li>
+                            <li class="breadcrumb-item"><a href="#">Category</a></li>
+                            <li class="breadcrumb-item active">Category Management</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <!-- END: Breadcrumbs -->
+
+            <!-- START: Open Add Subcategory Popup Button -->
+            <div class="row">
+                <div class="col-12 mt-3">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addSubcategoryModal">
+                        Add Subcategory
+                    </button>
+                </div>
+            </div>
+            <!-- END: Open Add Subcategory Popup Button -->
+
+            <div class="row">
+                <div class="col-12 mt-3">
+                    <div class="card">
+                        <div class="card-header justify-content-between align-items-center">
+                            <h4 class="card-title">{{ category.name }}</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="example" class="display table dataTable table-striped table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Created At</th>
+                                            <th>Updated At</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for subcategory in subcategories %}
+                                            <tr>
+                                                <td>{{ subcategory.name }}</td>
+                                                <td>{{ subcategory.created_at }}</td>
+                                                <td>{{ subcategory.updated_at }}</td>
+                                                <td>
+                                                    <a href="{% url 'update_subcategory' category_id=category.id subcategory_id=subcategory.id %}"
+                                                        class="btn btn-link text-primary" title="Update">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <a href="{% url 'view_subcategory' category_id=category.id subcategory_id=subcategory.id %}"
+                                                        class="btn btn-link text-info" title="View">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <form action="{% url 'delete_subcategory' category_id=category.id subcategory_id=subcategory.id %}"
+                                                        method="post" class="d-inline">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-link text-danger" title="Delete">
+                                                            <i class="fas fa-trash-alt"></i>
+                                                        </button>
+                                                    </form>
+                                                    <button type="button" class="btn btn-link text-success" title="Add Item"
+                                                        data-toggle="modal" data-target="#addItemModal{{ subcategory.id }}">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                </div>
+                                </div>
+                                </div>
+                                </div>
+                                </div>
+                                <!-- END: Card DATA -->
+                                
+                                <!-- START: Add Subcategory Modal -->
+                                <div class="modal fade" id="addSubcategoryModal" tabindex="-1" role="dialog" aria-labelledby="addSubcategoryModalLabel"
+                                    aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="addSubcategoryModalLabel">Add Subcategory</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form method="post" action="{% url 'category_detail' category_id=category.id %}">
+                                                    {% csrf_token %}
+                                                    {{ subcategory_form.as_p }} <!-- Use the subcategory_form variable here -->
+                                                    <button type="submit" name="add_subcategory" class="btn btn-primary">Add</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- END: Add Subcategory Modal -->
+
+
+            {% for subcategory in subcategories %}
+            <!-- START: Add Item Modal for Subcategory {{ subcategory.id }} -->
+            <div class="modal fade" id="addItemModal{{ subcategory.id }}" tabindex="-1" role="dialog"
+                aria-labelledby="addItemModal{{ subcategory.id }}Label" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addItemModal{{ subcategory.id }}Label">Add Item to {{ subcategory.name }}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="post" action="{% url 'add_item' %}" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="hidden" name="subcategory_id" value="{{ subcategory.id }}">
+                                <div class="form-group">
+                                    <label for="item-name">Name</label>
+                                    <input type="text" class="form-control" id="item-name" name="name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="item-description">Description</label>
+                                    <textarea class="form-control" id="item-description" name="description" rows="3" required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="item-price">Price</label>
+                                    <input type="number" class="form-control" id="item-price" name="price" step="0.01" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="item-quantity">Quantity</label>
+                                    <input type="number" class="form-control" id="item-quantity" name="quantity" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="item-image">Image</label>
+                                    <input type="file" class="form-control-file" id="item-image" name="image" required>
+                                </div>
+                                <div class="form-group">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="item-in-stock" name="in_stock">
+                                        <label class="custom-control-label" for="item-in-stock">In Stock</label>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Add</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END: Add Item Modal for Subcategory {{ subcategory.id }} -->
+            {% endfor %}
+        </div>
+    </main>
+{% endblock %}

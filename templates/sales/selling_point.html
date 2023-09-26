@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<main>
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex items-center justify-between mb-4">
+            <h1 class="text-3xl font-semibold">Point of Sale</h1>
+            <button
+                id="clearCartBtn"
+                class="px-4 py-2 bg-red-500 text-white rounded-md shadow-md hover:bg-red-600"
+                onclick="clearCart()"
+            >
+                Clear Cart
+            </button>
+        </div>
+        <div class="bg-white rounded-lg shadow-md mb-4 p-4">
+            <h2 class="text-xl font-semibold mb-4">Shopping Cart</h2>
+            <ul id="cartItems" class="mb-4">
+                <!-- Cart items will be added dynamically here -->
+            </ul>
+            <p class="mb-2 font-semibold">Total Price:</p>
+            <p id="totalPrice" class="text-xl font-semibold">KES 0.00</p>
+        </div>
+        <div class="bg-white rounded-lg shadow-md p-4">
+            <div class="relative mb-4">
+                <input
+                    type="text"
+                    id="itemSearch"
+                    placeholder="Search by item name..."
+                    class="block w-full py-2 pl-10 pr-4 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    oninput="filterItems()"
+                />
+                <button
+                    onclick="clearSearch()"
+                    class="absolute top-2 right-3 px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600"
+                >
+                    Clear
+                </button>
+            </div>
+            <table class="table w-full dataTable table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2">Category</th>
+                        <th class="px-4 py-2">Name</th>
+                        <th class="px-4 py-2">Price</th>
+                        <th class="px-4 py-2">Quantity</th>
+                        <th class="px-4 py-2">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for category in categories_with_items %}
+                        {% for subcategory in category.subcategory_set.all %}
+                            {% for item in subcategory.item_set.all %}
+                                <tr>
+                                    {% if item.quantity > 0 %}
+                                        <td class="px-4 py-2">{{ category.name }}</td>
+                                        <td class="px-4 py-2">{{ item.name }}</td>
+                                        <td class="px-4 py-2">KES {{ item.price }}</td>
+                                        <td class="px-4 py-2">{{ item.quantity }}</td>
+                                    {% else %}
+                                        <td class="px-4 py-2 text-red-500" colspan="4">Stock Out</td>
+                                    {% endif %}
+                                    <td class="px-4 py-2">
+                                        <form onsubmit="addToCart(event)" data-item-id="{{ item.id }}">
+                                            {% csrf_token %}
+                                            <input
+                                                type="number"
+                                                name="quantity"
+                                                value="1"
+                                                min="1"
+                                                class="w-16 px-2 py-1 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                            />
+                                            <button
+                                                type="submit"
+                                                class="ml-2 px-4 py-2 bg-green-500 text-white rounded-md shadow-sm hover:bg-green-600"
+                                            >
+                                                Add to Cart
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <button
+            id="checkoutBtn"
+            class="px-4 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600"
+        >
+            Checkout
+        </button>
+    </div>
+</main>
+
+<script src="{% static 'selling_point.js' %}"></script>
+<script>
+    const categoriesWithItems = JSON.parse('{{ categories_with_items|safe }}');
+
+    // Existing JavaScript code (as provided in the previous answer)
+</script>
+{% endblock %}

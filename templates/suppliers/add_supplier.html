@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Add Supplier</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KyZXEAg3QhqLMpG8r+Vz3sFR8RLpT0HrjOCpwzCFKD0PydX/jAxDR1Lxi1iBL2/L" crossorigin="anonymous">
+</head>
+
+<body>
+    <main>
+        <div class="container-fluid site-width">
+            <!-- START: Breadcrumbs -->
+            <!-- Breadcrumb code here... -->
+            <!-- END: Breadcrumbs -->
+
+            <!-- START: Card Data -->
+            <div class="row row-eq-height">
+                <div class="col-12 mt-3">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h4 class="card-title">Add Supplier</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-body py-5">
+                                <form method="post" class="row g-3">
+                                    {% csrf_token %}
+                                    <div class="col-md-6">
+                                        <label for="name" class="form-label">Name</label>
+                                        <input type="text" name="name" class="form-control">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="contact_person" class="form-label">Contact Person</label>
+                                        <input type="text" name="contact_person" class="form-control">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" name="email" class="form-control">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="phone_number" class="form-label">Phone Number</label>
+                                        <input type="text" name="phone_number" class="form-control">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="company" class="form-label">Company</label>
+                                        <input type="text" name="company" class="form-control" id="companyInput"
+                                            autocomplete="off">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="supplies" class="form-label">Supplies</label>
+                                        <input type="text" name="supplies" class="form-control" id="suppliesInput">
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="address" class="form-label">Address</label>
+                                        <textarea name="address" class="form-control" rows="3"></textarea>
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary">Add Supplier</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END: Card Data -->
+        </div>
+    </main>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-TDfdM/F1BEHXrzS3yd7+VlJd5lsZ5GjlzZwXJjUpKUE02ih5+Vf3bKFLjRGkP2Y9"
+        crossorigin="anonymous"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Company Autocomplete
+            $("#companyInput").autocomplete({
+                source: "{% url 'autocomplete_companies' %}",
+                minLength: 2,
+            });
+        });
+    </script>
+    <!-- ... -->
+
+</body>
+
+</html>
+{% endblock %}

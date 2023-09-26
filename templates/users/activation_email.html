@@ -1,0 +1,11 @@
+{% load static %}
+
+<h1>Activate your account</h1>
+<p>Hi {{ user.email }},</p>
+<p>Thank you for registering. Please use the following activation code to activate your account:</p>
+<h2>{{ user.activation_code }}</h2>
+<p>Alternatively, you can click on the link below to activate your account:</p>
+<p><a href="{% url 'activate_account' user.activation_code %}">Activate Account</a></p>
+<p>If you did not register on our website, please ignore this email.</p>
+<p>Best regards,</p>
+<p>Your Website Team</p>

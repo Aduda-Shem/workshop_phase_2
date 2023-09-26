@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+{% load static%}
+{% block content%}
+
+<style>
+    .form-group {
+        position: relative;
+    }
+
+    .btn {
+        width: auto;
+        height: 45px;
+        border-radius: 5px;
+        border: none;
+        margin-top: 1.5em;
+        margin-bottom: 1.5em;
+        background-color: #275ABD;
+    }
+
+    input {
+        border-radius: 5px;
+        width: 500px !important;
+        height: 35px;
+        border: none;
+        margin-top: 1.2em;
+        margin-bottom: 1.2em;
+        background-color: #f5f5f5;
+        position: relative;
+    }
+
+    .form {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .office-space-container {
+        max-height: 200px;
+        overflow-y: auto;
+        word-wrap: break-word !important;
+        display: inline-block;
+        padding: 5px;
+        border-radius: 3px;
+    }
+
+    .checkbox-container {
+        overflow: hidden !important;
+        position: relative;
+        display: inline-block;
+        margin-right: 5px;
+        cursor: pointer;
+    }
+
+    .checkbox-container input[type="checkbox"] {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        opacity: 0;
+    }
+
+    .checkbox-container .checkmark {
+        position: relative;
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        background-color: #eee;
+        border-radius: 3px;
+    }
+
+    .checkbox-container input[type="checkbox"]:checked+.checkmark {
+        background-color: #337ab7;
+    }
+
+    .checkbox-container .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+    }
+
+    .checkbox-container input[type="checkbox"]:checked+.checkmark:after {
+        display: block;
+    }
+
+    .checkbox-container .checkmark:after {
+        left: 7px;
+        top: 3px;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+
+    .check {
+        position: absolute;
+        right: 200px;
+    }
+
+    .p {
+        position: absolute;
+        right: 350px;
+        top: 25px;
+    }
+</style>
+
+
+<main>
+        <div class="container-fluid site-width">
+            <!-- START: Breadcrumbs-->
+            <div class="row ">
+                <div class="col-12  align-self-center">
+                    <div class="sub-header mt-3 py-3 align-self-center d-sm-flex w-100 rounded">
+                        <div class="sub-header  py-3  justify-content-around align-self-center d-flex w-100 rounded">
+                            <h5 class="card-title mb-0">ADD EMPLOYEE FORM</h5>
+                        </div>
+                        <ol class="breadcrumb bg-transparent align-self-center m-0 p-0">
+                        <li class="breadcrumb-item">Home</li>
+                    </ol>
+                    </div>
+                </div>
+            </div>
+            <!-- END: Breadcrumbs-->
+            
+          
+        <!-- START: Employee Registration Form -->
+        <div class="row">
+            <div class="col-12 col-sm-12">
+                <div class="row">
+                    <div class="col-12 col-md-6" style="margin: 0 auto;">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="wizard mb-4">
+                                    <div class="connecting-line"></div>
+                                    <ul class="nav nav-tabs d-flex mb-3">
+                                        <!-- Nav tabs for the wizard navigation -->
+                                        <li class="nav-item mr-auto">
+                                            <a class="nav-link position-relative round-tab text-left p-0 active border-0"
+                                                data-toggle="tab" href="#id1">
+                                                <i class="fas fa-user position-relative text-white h5 mb-3"></i>
+                                                <small class="d-none d-md-block">Employee Information</small>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item mx-auto">
+                                            <a class="nav-link position-relative round-tab text-sm-center text-left p-0 border-0"
+                                                data-toggle="tab" href="#id2">
+                                                <i class="fas fa-check-square position-relative text-white h5 mb-3"></i>
+                                                <small class="d-none d-md-block">Confirmation</small>
+                                            </a>
+                                        </li>
+                                    </ul>
+
+                                    <form method="POST" class="form">
+                                        {% csrf_token %}
+                                        <div class="tab-content">
+                                            <div class="tab-pane fade active show" id="id1">
+                                                <div class="form col-12">
+                                                    <div class="form-group row">
+                                                        <label class="col-sm-2 col-form-label">Email:</label>
+                                                        <div class="col-sm-10">
+                                                            {{ form.email }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="col-sm-2 col-form-label">First Name:</label>
+                                                        <div class="col-sm-10">
+                                                            {{ form.first_name }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="col-sm-2 col-form-label">Last Name:</label>
+                                                        <div class="col-sm-10">
+                                                            {{ form.last_name }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="col-sm-2 col-form-label">Phone Number:</label>
+                                                        <div class="col-sm-10">
+                                                            {{ form.phone_number }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="col-sm-2 col-form-label">National ID:</label>
+                                                        <div class="col-sm-10">
+                                                            {{ form.national_id }}
+                                                        </div>
+                                                    </div>
+                                                    <!-- Next button to navigate to the next tab -->
+                                                    <button type="button" class="btn float-right btn-primary nexttab">Next</button>
+                                                </div>
+                                            </div>
+
+                                            <div class="tab-pane fade" id="id2">
+                                                <div class="form p-5 text-center">
+                                                    <h3>Employee Registration</h3>
+                                                    <p>Complete employee registration by clicking the button below.</p>
+                                                    <button type="submit" class="btn btn-success">Register Employee</button>
+                                                    <button type="button" class="btn float-left btn-secondary prevtab">Previous</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END: Employee Registration Form -->
+
+        </div>
+        <!-- END: Card DATA-->
+        </div>
+</main>
+
+{% endblock%}

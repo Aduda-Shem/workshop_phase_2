@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mark's city Enterprise</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body id="main-container" class="default bg-gray-100">
+    <!-- START: Pre Loader -->
+    <div class="se-pre-con">
+        <div class="loader"></div>
+    </div>
+    <!-- END: Pre Loader -->
+
+    <!-- START: Header -->
+    <div id="header-fix" class="header fixed-top bg-white shadow">
+        <div class="site-width">
+            <nav class="navbar navbar-expand-lg p-0">
+                <div class="navbar-header h-100 h4 mb-0 align-self-center logo-bar text-left">
+                    <a href="index.html" class="horizontal-logo text-left flex items-center">
+                        <svg height="20pt" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512" width="20pt"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <!-- ... SVG Path Data ... -->
+                        </svg>
+                        <span class="h4 font-semibold align-self-center mb-0 ml-2">MACK CITY</span>
+                    </a>
+                </div>
+                <div class="navbar-header h4 mb-0 text-center h-100 collapse-menu-bar">
+                    <a href="#" class="sidebarCollapse" id="collapse">
+                        <i class="icon-menu"></i>
+                    </a>
+                </div>
+
+                <form class="float-left d-none d-lg-block search-form">
+                    <div class="form-group mb-0 position-relative">
+                        <a href="#" class="position-absolute close-button mobilesearch d-lg-none" data-toggle="dropdown"
+                            aria-expanded="false">
+                            <i class="icon-close h5"></i>
+                        </a>
+                    </div>
+                </form>
+                <div class="navbar-right ml-auto h-100">
+                    <ul class="ml-auto p-0 m-0 list-unstyled d-flex top-icon h-100">
+                        <li class="d-inline-block align-self-center d-block d-lg-none">
+                            <a href="#" class="nav-link mobilesearch" data-toggle="dropdown" aria-expanded="false">
+                                <i class="icon-magnifier h4"></i>
+                            </a>
+                        </li>
+
+                        <li class="dropdown align-self-center d-inline-block">
+                            <ul class="dropdown-menu dropdown-menu-right border py-0">
+                                <li><a class="dropdown-item text-center py-2" href="#"> Read All Message <i
+                                            class="icon-arrow-right pl-2 small"></i></a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown user-profile align-self-center d-inline-block">
+                            <a href="#" class="nav-link py-0" data-toggle="dropdown" aria-expanded="false">
+                                <div class="media">
+                                    <img src="dist/images/author.jpg" alt="" class="d-flex img-fluid rounded-circle"
+                                        width="29">
+                                </div>
+                            </a>
+
+                            <div class="dropdown-menu border dropdown-menu-right p-0">
+                                <a href="{%url 'update_profile'%}" class="dropdown-item px-2 align-self-center d-flex">
+                                    <span class="icon-user mr-2 h6 mb-0"></span> Profile</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="#" class="dropdown-item px-2 text-danger align-self-center d-flex">
+                                    <span class="icon-logout mr-2 h6  mb-0"></span> Sign Out</a>
+                            </div>
+
+                        </li>
+
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+    <!-- END: Header -->
+
+    <!-- START: Main Menu -->
+    <div class="sidebar">
+        <div class="site-width">
+            <!-- START: Menu -->
+            <ul id="side-menu" class="sidebar-menu">
+                <li class="dropdown"><a href="#"><i class="icon-home mr-1"></i> Dashboard</a>
+                    <ul>
+                        {% if not user.is_staff %}
+                        <li><a href="{%url 'dashboard'%}"><i class="icon-grid"></i> Dashboard</a></li>
+                        {% else %}
+                        <li><a href="{%url 'staff_dashboard'%}"><i class="icon-grid"></i> Dashboard</a></li>
+                        {% endif %}
+                    </ul>
+                </li>
+
+                <li class="dropdown"><a href="#"><i class="icon-grid mr-1"></i> Workshop</a>
+                    <ul>
+                        <li><a href="{%url 'add_category'%}"><i class="icon-menu"></i>Category</a></li>
+                        <li><a href="{%url 'inventory_items'%}"><i class="icon-list"></i> Items</a></li>
+                        <li><a href="{%url 'selling_point'%}"><i class="icon-credit-card"></i> Sales</a></li>
+                    </ul>
+                </li>
+
+                {% if not user.is_staff %}
+                <li class="dropdown"><a href="#"><i class="icon-user mr-1"></i> Employees</a>
+                    <ul>
+                        <li><a href="{%url 'register_employee'%}"><i class="icon-plus"></i> Add Employee</a></li>
+                        <li><a href="{%url 'employee_detail'%}"><i class="fas fa-users "></i> View Employees</a></li>
+                    </ul>
+                </li>
+                {% endif %}
+
+                <li class="dropdown"><a href="#"><i class="icon-user mr-1"></i> Suppliers</a>
+                    <ul>
+                        {% if not user.is_staff %}
+                        <li><a href="{%url 'add_supplier'%}"><i class="icon-plus"></i> Add Supplier</a></li>
+                        {% endif %}
+                        <li><a href="{%url 'list_suppliers'%}"><i class="fas fa-users "></i> View Suppliers</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <!-- END: Menu -->
+            <ol class="breadcrumb bg-transparent align-self-center m-0 p-0 ml-auto">
+                <li class="breadcrumb-item"><a href="#">Application</a></li>
+                <li class="breadcrumb-item active">Notes</li>
+            </ol>
+        </div>
+    </div>
+    <!-- END: Main Menu -->
+</body>
+
+</html>
