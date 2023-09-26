@@ -8,10 +8,12 @@ class AdminRegistrationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['email', 'phone_number', 'national_id', 'password']
+        fields = ['first_name','last_name','email', 'phone_number', 'national_id', 'password']
 
     def __init__(self, *args, **kwargs):
         super(AdminRegistrationForm, self).__init__(*args, **kwargs)
+        self.fields['first_name'].widget.attrs.update({'class': 'form-control', 'placeholder': 'First Name'})
+        self.fields['last_name'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Last_Name'})
         self.fields['email'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Email'})
         self.fields['phone_number'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Phone Number'})
         self.fields['national_id'].widget.attrs.update({'class': 'form-control', 'placeholder': 'National ID'})
