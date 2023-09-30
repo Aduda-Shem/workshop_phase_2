@@ -1,263 +1,150 @@
-import random
-import string
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, redirect, render
-from django.contrib.auth.hashers import make_password
-from django.contrib import messages
+from datetime import date
+import json
 from django.contrib.auth.views import LoginView
-from django.core.mail import send_mail
-from django.conf import settings
-from django.urls import reverse, reverse_lazy
-from inventory.models import Category, Item
+from django.urls import reverse_lazy
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views import View
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.http import JsonResponse
+from ecommerce.models import Category, Product, SaleRecord
 
-from django.views.decorators.http import require_http_methods
-from django.contrib.auth.forms import UserChangeForm
+from users.forms import LoginForm, SupplierForm
+from .models import Company, Employee, Supplier
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import authenticate, logout as auth_logout, login as auth_login
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.messages.views import SuccessMessageMixin
+from django.urls import reverse_lazy
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.utils import timezone
+from datetime import date, timedelta
+from django.db.models import Sum
 
 
-
-from users.forms import AdminRegistrationForm, CustomLoginForm, EmployeeRegistrationForm, ProfileUpdateForm, SupplierForm
-from users.models import Company, Supplier, User
-from django.db.models import F, Sum
-from users.utils import send_registration_email
-
-def register_admin(request):
+# Authentication Views
+def login(request):
     if request.method == 'POST':
-        form = AdminRegistrationForm(request.POST)
+        form = LoginForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.is_active = False
-            user.is_admin = True
-            password = generate_random_password()
-            user.password = make_password(password)
-            user.activation_code = generate_activation_code()
-            user.save()
-            send_activation_email(request, user, password)
-            return redirect('login')
-    else:
-        form = AdminRegistrationForm()
-    return render(request, 'users/register_admin.html', {'form': form})
-
-def generate_random_password():
-    characters = string.ascii_letters + string.digits
-    return ''.join(random.choice(characters) for i in range(8))
-
-
-def generate_activation_code():
-    length = 10
-    code = ''.join(random.choices(string.ascii_letters + string.digits, k=length))
-    return code
-
-
-def send_activation_email(request, user, password):
-    activation_link = request.build_absolute_uri(reverse('activate_account', args=[user.activation_code]))
-    subject = 'Activate your account'
-    message = f'Please click the following link to activate your account: {activation_link}\n\n'
-    message += f'Your generated password is: {password}\n\n'
-    message += 'Please keep this information secure.'
-    from_email = settings.DEFAULT_FROM_EMAIL
-    recipient_list = [user.email]
-    send_mail(subject, message, from_email, recipient_list)
-
-
-def activate_account(request, activation_code):
-    try:
-        user = User.objects.get(activation_code=activation_code)
-        user.is_active = True
-        user.save()
-        messages.success(request, 'Your account has been activated. You can now log in.')
-        return redirect('login')
-    except User.DoesNotExist:
-        messages.error(request, 'Invalid activation code.')
-        return redirect('activation_error')
-
-#Employee Registeration
-def register_employee(request):
-    if request.method == 'POST':
-        form = EmployeeRegistrationForm(request.POST)
-        print(form)
-        if form.is_valid():
-            print(form.is_valid)
-            user = form.save(commit=False)
-            user.is_active = True
-            user.is_staff = True
-            password = generate_random_password()
-            user.set_password(password)
-            user.save()
-            send_registration_email(request, user, password)
-            return redirect('employee_detail')
-    else:
-        form = EmployeeRegistrationForm()
-    return render(request, 'users/add_employee.html', {'form': form})
-
-
-# class CustomLoginView(LoginView):
-#     template_name = 'users/user_login.html'
-#     success_url = '/home/'
-#     authentication_form = CustomLoginForm
-
-class CustomLoginView(LoginView):
-    template_name = 'users/user_login.html'
-    success_url = reverse_lazy('home')
-    authentication_form = CustomLoginForm
-
-    def get_success_url(self):
-        if self.request.user.is_staff:
-            return reverse_lazy('staff_dashboard')
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=email, password=password) 
+            if user and user.is_active:
+                auth_login(request, user)
+                messages.success(request, 'Successfully logged in')
+                return redirect('dashboard') 
+            else:
+                messages.error(request, 'Incorrect credentials.')
         else:
-            return super().get_success_url()
-
-
-
-@login_required
-def dashboard(request):
-    user = request.user
-    categories = Category.objects.all()
-    items = Item.objects.all()
-    supplier = Supplier.objects.count() 
-    total_quantity = Item.objects.aggregate(total_quantity=Sum('quantity'))['total_quantity']
-    total_price = Item.objects.annotate(
-        total_item_price=F('quantity') * F('price')
-    ).aggregate(total_price_sum=Sum('total_item_price'))['total_price_sum']
-    employee = User.objects.filter(is_staff=True).count()
-    categories_with_total_stock = Category.objects.annotate(
-        total_stock=Sum('subcategory__item__quantity'),
-        total_price=Sum('subcategory__item__price')
-    )
-
-    context = {
-        'user': user,
-        'supplier': supplier,
-        'items': items,
-        'categories': categories,
-        'employee': employee,
-        'total_price': total_price,
-        'total_quantity': total_quantity,
-        'categories_with_total_stock': categories_with_total_stock,
-    }
-
-    return render(request, 'dashboard.html', context)
-
-@login_required
-def staff_dashboard(request):
-    user = request.user
-    categories = Category.objects.all()
-    supplier = Supplier.objects.count() 
-    total_quantity = Item.objects.aggregate(total_quantity=Sum('quantity'))['total_quantity']
-    total_price = Item.objects.annotate(
-        total_item_price=F('quantity') * F('price')
-    ).aggregate(total_price_sum=Sum('total_item_price'))['total_price_sum']
-    employee = User.objects.filter(is_staff=True).count()
-    categories_with_total_stock = Category.objects.annotate(
-        total_stock=Sum('subcategory__item__quantity'),
-        total_price=Sum('subcategory__item__price')
-    )
-
-    context = {
-        'user': user,
-        'supplier': supplier,
-        'categories': categories,
-        'employee': employee,
-        'total_price': total_price,
-        'total_quantity': total_quantity,
-        'categories_with_total_stock': categories_with_total_stock,
-    }
-
-    return render(request, 'staff_dashboard.html', context)
-
-
-@login_required
-def employee_detail(request):
-    employees =  User.objects.filter(is_staff=True)
-    return render(request, 'users/view_employee.html', {'employees': employees})
-
-
-@login_required
-def update_profile(request):
-    if request.method == 'POST':
-        user_form = UserChangeForm(request.POST, request.FILES, instance=request.user)
-
-        if user_form.is_valid():
-            user_form.save()
-            messages.success(request, f'Your profile has been updated!')
-            return redirect('update_profile')
-
+            messages.error(request, 'Invalid form submission.')
     else:
-        user_form = UserChangeForm(instance=request.user)
-
-    context = {
-        'user_form': user_form,
-    }
-    return render(request, 'users/user_profile.html', context)
-
-
+        form = LoginForm()
+    
+    return render(request, 'users/user_login.html', {'form': form})
 
 @login_required
-def add_supplier(request):
-    if request.method == "POST":
-        form = SupplierForm(request.POST)
-        if form.is_valid():
-            # Save Supplier details without committing to the database yet
-            supplier = form.save(commit=False)
+def logout(request):
+    auth_logout(request)
+    messages.success(request, f"Successfully logged out")
+    return redirect('login')
 
-            # Check if the company exists, if not, create it
-            company_name = form.cleaned_data.get('company')
+
+@method_decorator(login_required, name='dispatch')
+class DashboardView(View):
+    def get(self, request):
+        total_price = sum(product.price * product.stock_quantity for product in Product.objects.all())
+
+        employee_count = Employee.objects.count()
+        supplier_count = Supplier.objects.count()
+
+        today_sale = SaleRecord.objects.filter(point_of_sale__sale_datetime__date=date.today()).aggregate(total_sales=Sum('total_amount'))['total_sales'] or 0
+
+        today = date.today()
+        six_months_ago = today - timedelta(days=180)  
+
+        sales_data = SaleRecord.objects.filter(point_of_sale__sale_datetime__date__gte=six_months_ago) \
+            .values('point_of_sale__sale_datetime__month') \
+            .annotate(total_sales=Sum('total_amount')) \
+            .order_by('point_of_sale__sale_datetime__month')
+
+        labels = [month for month in range(1, 13)] 
+        sales_values = [sales['total_sales'] if sales['total_sales'] else 0 for sales in sales_data]
+
+        sales_chart_data = {
+            'labels': labels,
+            'datasets': [
+                {
+                    'label': "Monthly Sales",
+                    'data': sales_values,
+                    'borderColor': "rgba(75, 192, 192, 1)",
+                    'borderWidth': 1,
+                    'fill': False,
+                },
+            ],
+        }
+
+        categories = Category.objects.all()
+        categories_with_total_stock = []
+        for category in categories:
+            products_in_category = Product.objects.filter(category=category)
+            total_stock = sum(product.stock_quantity for product in products_in_category)
+            total_price = sum(product.price * product.stock_quantity for product in products_in_category)
+            categories_with_total_stock.append({'id': category.id, 'total_stock': total_stock, 'total_price': total_price})
+
+        recent_sales = SaleRecord.objects.order_by('-sale_datetime')[:10]
+
+        context = {
+            'total_price': total_price,
+            'employee': employee_count,
+            'today_sale': today_sale,
+            'supplier': supplier_count,
+            'categories': categories,
+            'categories_with_total_stock': categories_with_total_stock,
+            'recent_sales': recent_sales,
+            'sales_chart_data': json.dumps(sales_chart_data),
+        }
+
+        return render(request, 'dashboard.html', context)
+
+@method_decorator(login_required, name='dispatch')
+class SupplierListView(View):
+    template_name = 'suppliers/supplier_list.html'
+
+    def get(self, request):
+        suppliers = Supplier.objects.all()
+        form = SupplierForm()
+        return render(request, self.template_name, {'suppliers': suppliers, 'form': form})
+
+    def post(self, request):
+        data = request.POST
+        form = SupplierForm(data)
+        if form.is_valid():
+            company_name = data.get('company', None)
             if company_name:
                 company, created = Company.objects.get_or_create(name=company_name)
-                supplier.company = company
+                form.instance.company = company
 
-            # Save the supplier to the database
-            supplier.save()
-            return redirect('list_suppliers')
-    else:
-        form = SupplierForm()
-    return render(request, 'suppliers/add_supplier.html', {'form': form})
+            form.save()
+            return redirect('supplier_list') 
+        else:
+            suppliers = Supplier.objects.all()
+            return render(request, self.template_name, {'suppliers': suppliers, 'form': form})
 
-
-
-@login_required
-def list_suppliers(request, supplier_id=None):
-    suppliers = Supplier.objects.all()
-
-    if supplier_id:
-        supplier = get_object_or_404(Supplier, id=supplier_id)
-    else:
-        supplier = None
-
-    return render(request, 'suppliers/list_suppliers.html', {'suppliers': suppliers, 'supplier': supplier})
-
-def edit_supplier(request, supplier_id):
-    supplier = get_object_or_404(Supplier, id=supplier_id)
-
-    if request.method == 'POST':
-        form = SupplierForm(request.POST, instance=supplier)
+    def put(self, request, pk):
+        supplier = get_object_or_404(Supplier, pk=pk)
+        data = request.POST
+        form = SupplierForm(data, instance=supplier)
         if form.is_valid():
             form.save()
-            return redirect('list_suppliers')
-    else:
-        form = SupplierForm(instance=supplier)
+            return redirect('supplier_list') 
+        else:
+            return render(request, self.template_name, {'form': form})
 
-    return render(request, 'suppliers/edit_supplier.html', {'supplier': supplier, 'form': form})
-
-
-@require_http_methods(["GET"])
-def autocomplete_companies(request):
-    term = request.GET.get('term')
-    companies = Company.objects.filter(name__icontains=term)[:10]  # Filter companies based on the search term
-    results = [company.name for company in companies]
-    return JsonResponse(results, safe=False)
-
-
-@login_required
-def delete_supplier(request, supplier_id):
-    supplier = get_object_or_404(Supplier, id=supplier_id)
-
-    if request.method == 'POST':
+    def delete(self, request, pk):
+        supplier = get_object_or_404(Supplier, pk=pk)
         supplier.delete()
-        return redirect('list_suppliers')
-
-    return redirect('list_suppliers')
-
-
-
-
+        return redirect('supplier_list')

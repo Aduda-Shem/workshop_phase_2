@@ -65,7 +65,7 @@
                             </a>
 
                             <div class="dropdown-menu border dropdown-menu-right p-0">
-                                <a href="{%url 'update_profile'%}" class="dropdown-item px-2 align-self-center d-flex">
+                                <a href="{%url 'supplier_list'%}" class="dropdown-item px-2 align-self-center d-flex">
                                     <span class="icon-user mr-2 h6 mb-0"></span> Profile</a>
                                 <div class="dropdown-divider"></div>
                                 <a href="#" class="dropdown-item px-2 text-danger align-self-center d-flex">
@@ -91,24 +91,24 @@
                         {% if not user.is_staff %}
                         <li><a href="{%url 'dashboard'%}"><i class="icon-grid"></i> Dashboard</a></li>
                         {% else %}
-                        <li><a href="{%url 'staff_dashboard'%}"><i class="icon-grid"></i> Dashboard</a></li>
+                        <li><a href="{%url 'supplier_list'%}"><i class="icon-grid"></i> Dashboard</a></li>
                         {% endif %}
                     </ul>
                 </li>
 
                 <li class="dropdown"><a href="#"><i class="icon-grid mr-1"></i> Workshop</a>
                     <ul>
-                        <li><a href="{%url 'add_category'%}"><i class="icon-menu"></i>Category</a></li>
-                        <li><a href="{%url 'inventory_items'%}"><i class="icon-list"></i> Items</a></li>
-                        <li><a href="{%url 'selling_point'%}"><i class="icon-credit-card"></i> Sales</a></li>
+                        <li><a href="{%url 'category_list'%}"><i class="icon-menu"></i>Category</a></li>
+                        <li><a href="{%url 'supplier_list'%}"><i class="icon-list"></i> Items</a></li>
+                        <li><a href="{%url 'supplier_list'%}"><i class="icon-credit-card"></i> Sales</a></li>
                     </ul>
                 </li>
 
                 {% if not user.is_staff %}
                 <li class="dropdown"><a href="#"><i class="icon-user mr-1"></i> Employees</a>
                     <ul>
-                        <li><a href="{%url 'register_employee'%}"><i class="icon-plus"></i> Add Employee</a></li>
-                        <li><a href="{%url 'employee_detail'%}"><i class="fas fa-users "></i> View Employees</a></li>
+                        <li><a href="{%url 'supplier_list'%}"><i class="icon-plus"></i> Add Employee</a></li>
+                        <li><a href="{%url 'supplier_list'%}"><i class="fas fa-users "></i> View Employees</a></li>
                     </ul>
                 </li>
                 {% endif %}
@@ -116,9 +116,9 @@
                 <li class="dropdown"><a href="#"><i class="icon-user mr-1"></i> Suppliers</a>
                     <ul>
                         {% if not user.is_staff %}
-                        <li><a href="{%url 'add_supplier'%}"><i class="icon-plus"></i> Add Supplier</a></li>
+                        <li><a href="{%url 'supplier_list'%}"><i class="icon-plus"></i> Add Supplier</a></li>
                         {% endif %}
-                        <li><a href="{%url 'list_suppliers'%}"><i class="fas fa-users "></i> View Suppliers</a></li>
+                        <li><a href="{%url 'supplier_list'%}"><i class="fas fa-users "></i> View Suppliers</a></li>
                     </ul>
                 </li>
             </ul>

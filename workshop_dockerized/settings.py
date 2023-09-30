@@ -42,10 +42,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'analytics',
-    'inventory',
-    'orders',
     'users',
+    'simple_history',
+    'ecommerce'
+
 ]
 
 MIDDLEWARE = [
@@ -57,6 +57,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+AUTH_USER_MODEL = 'users.User'
+
 
 ROOT_URLCONF = 'workshop_dockerized.urls'
 

@@ -1,0 +1,255 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<main>
+    <div class="container-fluid site-width">
+        <!-- START: Breadcrumbs -->
+        <div class="row">
+            <div class="col-12  align-self-center">
+                <div class="sub-header mt-3 py-3 align-self-center d-sm-flex w-100 rounded">
+                    <div class="w-sm-100 mr-auto">
+                        <h4 class="mb-0">Category Management</h4>
+                        <p>Welcome, {{ user.first_name }}</p>
+                    </div>
+
+                    <ol class="breadcrumb bg-transparent align-self-center m-0 p-0">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Category Management</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <!-- END: Breadcrumbs -->
+
+        <!-- START: Card Data -->
+        <div class="row">
+            <div class="col-12 mt-3">
+                <div class="card">
+                    <div class="card-header justify-content-between align-items-center">
+                        <h4 class="card-title">Category List</h4>
+                        <button type="button" class="btn btn-success btn-sm float-right" data-toggle="modal" data-target="#addCategoryModal">Add Category</button>
+                    </div>
+                    <div class="card-body">
+                        <!-- Display success message here -->
+                        {% if messages %}
+                        <div class="alert alert-success">
+                            {% for message in messages %}
+                            {{ message }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="table-responsive">
+                            <table id="categoryTable" class="display table dataTable table-striped table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                        <th>Image</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Loop through categories and display them -->
+                                    {% for category in categories %}
+                                    <tr>
+                                        <td>{{ category.name }}</td>
+                                        <td>{{ category.description }}</td>
+                                        <td><img src="{{ category.image.url }}" alt="{{ category.name }}" width="50"></td>
+                                        <td>
+                                            <!-- Delete and Edit buttons -->
+                                            <button type="button" class="btn btn-danger btn-sm delete-category" data-category-id="{{ category.id }}">Delete</button>
+                                            <button type="button" class="btn btn-primary btn-sm edit-category" data-toggle="modal" data-target="#editCategoryModal{{ category.id }}">Edit</button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                        <th>Image</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END: Card DATA -->
+    </div>
+</main>
+
+<!-- Add Category Modal -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCategoryModalLabel">Add Category</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Category Form -->
+                <form id="categoryForm" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modals for Categories -->
+{% for category in categories %}
+<div class="modal fade" id="deleteCategoryModal{{ category.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteCategoryModalLabel{{ category.id }}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteCategoryModalLabel{{ category.id }}">Delete Category</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete "{{ category.name }}"?</p>
+            </div>
+            <div class="modal-footer">
+                <form method="post" action="{% url 'category_delete' category.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Edit Modals for Categories -->
+{% for category in categories %}
+<div class="modal fade" id="editCategoryModal{{ category.id }}" tabindex="-1" role="dialog" aria-labelledby="editCategoryModalLabel{{ category.id }}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editCategoryModalLabel{{ category.id }}">Edit Category</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Edit Category Form -->
+                <form id="editCategoryForm{{ category.id }}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<script src="{% static 'jquery.min.js' %}"></script>
+<script>
+    // JavaScript to show success messages
+    $(document).ready(function () {
+        setTimeout(function () {
+            $(".alert-success").fadeOut("slow");
+        }, 3000);
+
+        // Handle category form submission
+        $("#categoryForm").submit(function (e) {
+            e.preventDefault();
+            var form = $(this);
+
+            $.ajax({
+                type: "POST",
+                url: form.attr("action"),
+                data: form.serialize(),
+                success: function (data) {
+                    // Handle success, e.g., show success message and update category list
+                    // You may need to reload the table or append a new row here
+                    console.log("Category form submitted successfully!");
+                },
+                error: function (data) {
+                    // Handle errors, e.g., display error message
+                    console.error("Category form submission failed!");
+                }
+            });
+        });
+
+        // Handle category deletion
+        $(".delete-category").click(function () {
+            var categoryId = $(this).data("category-id");
+
+            // You can use AJAX to delete the category here
+            // Make an AJAX request to delete the category by ID
+            $.ajax({
+                type: "POST",
+                url: "{% url 'category_delete' 0 %}".replace("0", categoryId), // Use the correct URL
+                data: {
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success: function (data) {
+                    // Handle success, e.g., show success message and remove the category row from the table
+                    console.log("Category deleted successfully!");
+                },
+                error: function (data) {
+                    // Handle errors, e.g., display error message
+                    console.error("Category deletion failed!");
+                }
+            });
+        });
+
+        // Handle category editing
+        $(".edit-category").click(function () {
+            var categoryId = $(this).data("category-id");
+
+            // You can use AJAX to load the category data into the edit modal here
+            // Make an AJAX request to fetch category data by ID and populate the edit modal fields
+            $.ajax({
+                type: "GET",
+                url: "{% url 'category_edit' 0 %}".replace("0", categoryId), // Use the correct URL
+                success: function (data) {
+                    // Populate the edit modal fields with the fetched data
+                    $("#editCategoryForm" + categoryId + " input[name='name']").val(data.name);
+                    $("#editCategoryForm" + categoryId + " textarea[name='description']").val(data.description);
+
+                    // Handle the form submission for editing
+                    $("#editCategoryForm" + categoryId).submit(function (e) {
+                        e.preventDefault();
+                        var form = $(this);
+
+                        $.ajax({
+                            type: "POST",
+                            url: form.attr("action"),
+                            data: form.serialize(),
+                            success: function (data) {
+                                // Handle success, e.g., show success message and update category list
+                                // You may need to reload the table or update the category row here
+                                console.log("Category edited successfully!");
+                            },
+                            error: function (data) {
+                                // Handle errors, e.g., display error message
+                                console.error("Category edit failed!");
+                            }
+                        });
+                    });
+                },
+                error: function (data) {
+                    // Handle errors, e.g., display error message
+                    console.error("Error fetching category data for editing!");
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

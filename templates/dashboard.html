@@ -2,168 +2,195 @@
 {% load static %}
 
 {% block content %}
-        <!-- START: Main Content-->
-        <main>
-            <div class="container-fluid site-width">
-                <!-- START: Breadcrumbs-->
-                <div class="row">
-                    <div class="col-12  align-self-center">
-                        <div class="sub-header mt-3 py-3 align-self-center d-sm-flex w-100 rounded">
-                            <div class="w-sm-100 mr-auto"><h4 class="mb-0">Dashboard</h4> <p>Welcome, {{user.first_name}}</p></div>
-
-                            <ol class="breadcrumb bg-transparent align-self-center m-0 p-0">
-                                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                                <li class="breadcrumb-item active">Dashboard</li>
-                            </ol>
+    <main>
+        <div class="container-fluid site-width">
+            <!-- START: Breadcrumbs -->
+            <div class="row">
+                <div class="col-12  align-self-center">
+                    <div class="sub-header mt-3 py-3 align-self-center d-sm-flex w-100 rounded">
+                        <div class="w-sm-100 mr-auto">
+                            <h4 class="mb-0">Dashboard</h4>
+                            <p>Welcome, {{ user.first_name }}</p>
                         </div>
+
+                        <ol class="breadcrumb bg-transparent align-self-center m-0 p-0">
+                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item active">Dashboard</li>
+                        </ol>
                     </div>
                 </div>
-                <!-- END: Breadcrumbs-->
-
-                <!-- START: Card Data-->
-                <div class="row">
-                    <div class="col-12 col-sm-6 col-xl-3 mt-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class='d-flex px-0 px-lg-2 py-2 align-self-center'>
-                                    <i class="icon-basket icons card-liner-icon mt-2"></i>
-                                    <div class='card-liner-content'>
-                                        <h2 class="card-liner-title">KES {{total_price}}</h2>
-                                        <h6 class="card-liner-subtitle">Total Stock</h6>                                       
-                                    </div>                                
-                                </div>
-                                <div id="apex_today_order"></div>                               
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-12 col-sm-6 col-xl-3 mt-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class='d-flex px-0 px-lg-2 py-2 align-self-center'>
-                                    <i class="icon-people icons card-liner-icon mt-2"></i>
-                                    <div class='card-liner-content'>
-                                        <h2 class="card-liner-title">{{employee}}</h2>
-                                        <h6 class="card-liner-subtitle">Employees</h6> 
-                                    </div>                                
-                                </div>
-                                <span class="bg-primary card-liner-absolute-icon text-white card-liner-small-tip"></span>
-                                <div id="apex_today_visitors"></div> 
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-sm-6 col-xl-3 mt-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class='d-flex px-0 px-lg-2 py-2 align-self-center'>
-                                    <i class="icon-credit-card icons card-liner-icon mt-2"></i>
-                                    <div class='card-liner-content'>
-                                        <h2 class="card-liner-title">KES 4,390</h2>
-                                        <h6 class="card-liner-subtitle">Today's Sale</h6> 
-                                    </div>                                
-                                </div>
-                                <div id="apex_today_sale"></div> 
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-sm-6 col-xl-3 mt-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class='d-flex px-0 px-lg-2 py-2 align-self-center'>
-                                    <i class="fas fa-users icons card-liner-icon mt-2"></i>
-                                    <div class='card-liner-content'>
-                                        <h2 class="card-liner-title">{{supplier}}</h2>
-                                        <h6 class="card-liner-subtitle">Suppliers</h6> 
-                                    </div>                                
-                                </div>
-                                <div id="apex_today_profit"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 col-md-6 col-lg-4 mt-3">
-                        <div class="card">                      
-                            <div class="card-content">
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered mb-0">
-                                            <thead>
-                                                <tr>
-                                                    <th>Category</th>
-                                                    <th>Total Stock</th>
-                                                    <th>Total Price</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {% for category in categories %}
-                                                <tr>
-                                                    <td class="text-primary">{{ category.name }}</td>
-                                                    <td>
-                                                        {% for category_with_stock in categories_with_total_stock %}
-                                                            {% if category_with_stock.id == category.id %}
-                                                                {{ category_with_stock.total_stock }}
-                                                            {% endif %}
-                                                        {% endfor %}
-                                                    </td>
-                                                    <td>
-                                                        {% for category_with_stock in categories_with_total_stock %}
-                                                            {% if category_with_stock.id == category.id %}
-                                                               KES {{ category_with_stock.total_price }}
-                                                            {% endif %}
-                                                        {% endfor %}
-                                                    </td>
-                                                </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-12 col-md-6 col-lg-8 mt-3">
-                        <div class="card">
-                            <div class="card-header  justify-content-between align-items-center">                               
-                                <h6 class="card-title">Recent Sales</h6> 
-                            </div>
-                            <div class="card-body table-responsive p-0">                         
-
-                                <table class="table  mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Item</th>
-                                            <th>Sold By</th>
-                                            <th>Amount Sold</th>
-                                            <th>Amount</th>
-                                            <th>date</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>0001</td>
-                                            <td>03/11/2015</td>
-                                            <td>Addison Nichols</td>
-                                            <td>KES 515.20</td>
-                                            <td>547</td>
-                                            <td>04/10/2017</td>
-                                            <td><span class="badge outline-badge-Info">Paid</span></td>
-                                        </tr>
-                                      
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        
-
-
-                    </div> 
-                </div>
-                <!-- END: Card DATA-->                 
             </div>
-        </main>
+            <!-- END: Breadcrumbs -->
 
+            <!-- START: Card Data -->
+            <div class="row">
+                <div class="col-12 col-sm-6 col-xl-3 mt-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class='d-flex px-0 px-lg-2 py-2 align-self-center'>
+                                <i class="icon-basket icons card-liner-icon mt-2"></i>
+                                <div class='card-liner-content'>
+                                    <h2 class="card-liner-title">KES {{ total_price }}</h2>
+                                    <h6 class="card-liner-subtitle">Total Stock</h6>
+                                </div>
+                            </div>
+                            <div id="apex_today_order"></div>
+                        </div>
+                    </div>
+                </div>
 
+                <div class="col-12 col-sm-6 col-xl-3 mt-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class='d-flex px-0 px-lg-2 py-2 align-self-center'>
+                                <i class="icon-people icons card-liner-icon mt-2"></i>
+                                <div class='card-liner-content'>
+                                    <h2 class="card-liner-title">{{ employee }}</h2>
+                                    <h6 class="card-liner-subtitle">Employees</h6>
+                                </div>
+                            </div>
+                            <span class="bg-primary card-liner-absolute-icon text-white card-liner-small-tip"></span>
+                            <div id="apex_today_visitors"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-xl-3 mt-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class='d-flex px-0 px-lg-2 py-2 align-self-center'>
+                                <i class="icon-credit-card icons card-liner-icon mt-2"></i>
+                                <div class='card-liner-content'>
+                                    <h2 class="card-liner-title">KES 4,390</h2>
+                                    <h6 class="card-liner-subtitle">Today's Sale</h6>
+                                </div>
+                            </div>
+                            <div id="apex_today_sale"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-xl-3 mt-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class='d-flex px-0 px-lg-2 py-2 align-self-center'>
+                                <i class="fas fa-users icons card-liner-icon mt-2"></i>
+                                <div class='card-liner-content'>
+                                    <h2 class="card-liner-title">{{ supplier }}</h2>
+                                    <h6 class="card-liner-subtitle">Suppliers</h6>
+                                </div>
+                            </div>
+                            <div id="apex_today_profit"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-4 mt-3">
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Category</th>
+                                                <th>Total Stock</th>
+                                                <th>Total Price</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for category in categories %}
+                                            <tr>
+                                                <td class="text-primary">{{ category.name }}</td>
+                                                <td>
+                                                    {% for category_with_stock in categories_with_total_stock %}
+                                                        {% if category_with_stock.id == category.id %}
+                                                            {{ category_with_stock.total_stock }}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </td>
+                                                <td>
+                                                    {% for category_with_stock in categories_with_total_stock %}
+                                                        {% if category_with_stock.id == category.id %}
+                                                            KES {{ category_with_stock.total_price }}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Display information about recent sales -->
+                <div class="col-12 col-md-6 col-lg-8 mt-3">
+                    <div class="card">
+                        <div class="card-header  justify-content-between align-items-center">
+                            <h6 class="card-title">Recent Sales</h6>
+                        </div>
+                        <div class="card-body table-responsive p-0">
+                            <table class="table  mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Item</th>
+                                        <th>Sold By</th>
+                                        <th>Amount Sold</th>
+                                        <th>Amount</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for sale_record in recent_sales %}
+                                    <tr>
+                                        <td>{{ sale_record.id }}</td>
+                                        <td>{{ sale_record.product.name }}</td> <!-- Replace with the actual field name for the product -->
+                                        <td>{{ sale_record.point_of_sale.employee.name }}</td> <!-- Replace with the actual field name for the employee -->
+                                        <td>{{ sale_record.quantity_sold }}</td>
+                                        <td>KES {{ sale_record.total_amount }}</td>
+                                        <td>{{ sale_record.sale_datetime }}</td> <!-- Replace with the actual field name for the sale date -->
+                                        <td><span class="badge outline-badge-Info">Paid</span></td> <!-- Replace with the actual field name for the sale status -->
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Display the sales chart -->
+                <div class="col-12 mt-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="card-title">Monthly Sales Chart</h6>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="salesChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- END: Main Content -->
+
+    <!-- JavaScript to render the sales chart -->
+    <script>
+        const salesData = {{ sales_chart_data|safe }};
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: salesData,
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
 {% endblock %}
