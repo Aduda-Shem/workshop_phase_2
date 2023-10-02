@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.views import View
+from django.db.models import Sum
 from .models import Category, Product, Subcategory
 from .forms import CategoryForm, ProductForm, SubcategoryForm
 
@@ -64,8 +65,8 @@ class SubcategoryView(View):
         }
         return render(request, self.template_name, context)
 
-    def post(self, request, category_pk):
-        category = get_object_or_404(Category, pk=category_pk)
+    def post(self, request, category_id):
+        category = get_object_or_404(Category, pk=category_id)
         subcategory_form = SubcategoryForm(request.POST, request.FILES)
 
         if subcategory_form.is_valid():
@@ -75,6 +76,7 @@ class SubcategoryView(View):
             messages.success(request, 'Subcategory created successfully.')
         else:
             messages.error(request, 'Subcategory creation failed.')
+            print(subcategory_form.errors)
 
         return redirect('category_list')
 
@@ -104,49 +106,58 @@ class SubcategoryView(View):
 class ProductView(View):
     template_name = 'product/product_list.html'
 
-    def get(self, request):
+    def get(self, request, action=None, pk=None):
+        if action == 'create':
+            form = ProductForm()
+            return render(request, self.template_name, {'form': form})
+        elif action == 'update':
+            product = get_object_or_404(Product, pk=pk)
+            form = ProductForm(instance=product)
+            return render(request, self.template_name, {'form': form, 'product': product})
+        elif action == 'statistics':
+            return self.get_statistics(request)
+
         products = Product.objects.all()
         form = ProductForm()
         return render(request, self.template_name, {'products': products, 'form': form})
 
-    def post(self, request):
-        form = ProductForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Product created successfully.')
-        else:
-            messages.error(request, 'Product creation failed.')
-        return redirect('product_list')
+    def post(self, request, action=None, pk=None):
+        if action == 'create':
+            form = ProductForm(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Product created successfully.')
+                return redirect('product_list')
+            else:
+                messages.error(request, 'Product creation failed.')
+        elif action == 'update':
+            product = get_object_or_404(Product, pk=pk)
+            form = ProductForm(request.POST, request.FILES, instance=product)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Product updated successfully.')
+                return redirect('product_list')
+            else:
+                messages.error(request, 'Product update failed.')
+        elif action == 'delete':
+            product = get_object_or_404(Product, pk=pk)
+            product.delete()
+            messages.success(request, 'Product deleted successfully.')
+            return redirect('product_list')
 
-    def put(self, request):
-        product_id = request.POST.get('pk')
-        product = get_object_or_404(Product, pk=product_id)
-        form = ProductForm(request.POST, request.FILES, instance=product)
+        products = Product.objects.all()
+        form = ProductForm()
+        return render(request, self.template_name, {'products': products, 'form': form})
 
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Product updated successfully.')
-        else:
-            messages.error(request, 'Product update failed.')
-        
-        return redirect('product_list')
+    def get_statistics(self, request):
+        total_products = Product.objects.count()
+        total_price_sum = Product.objects.aggregate(total_price_sum=Sum('price'))['total_price_sum']
+        average_price = total_price_sum / total_products if total_products > 0 else 0
 
-    def delete(self, request):
-        product_id = request.POST.get('pk')
-        product = get_object_or_404(Product, pk=product_id)
-        product.delete()
-        messages.success(request, 'Product deleted successfully.')
-        return redirect('product_list')
-
-    def get_product_data(self, request, pk):
-        product = get_object_or_404(Product, pk=pk)
-        data = {
-            'name': product.name,
-            'description': product.description,
-            'price': product.price,
-            'stock_quantity': product.stock_quantity,
-            'category': product.category.name,
-            'subcategory': product.subcategory.name,
-            'image_url': product.image.url,
+        statistics_data = {
+            'total_products': total_products,
+            'total_price_sum': str(total_price_sum),
+            'average_price': str(average_price),
         }
-        return JsonResponse(data)
+
+        return JsonResponse(statistics_data)

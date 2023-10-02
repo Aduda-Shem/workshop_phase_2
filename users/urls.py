@@ -1,7 +1,8 @@
 from django.urls import path
+from django.db.models import Sum
 
 from ecommerce.views import CategoryView, ProductView, SubcategoryView
-from .views import  DashboardView, SupplierEditView, SupplierListView, create_employee, login
+from .views import  DashboardView, SupplierEditView, SupplierListView, create_employee, employee_list, login
 
 urlpatterns = [
     path('login/', login, name='login'),
@@ -13,6 +14,7 @@ urlpatterns = [
 
     # URLs for managing Employee
     path('create_employee/', create_employee, name='create_employee'),
+    path('employee_list/', employee_list, name='employee_list'),
 
     # URLs for managing categories
     path('categories/', CategoryView.as_view(), name='category_list'),
@@ -29,8 +31,8 @@ urlpatterns = [
     
     # URLs for managing products
     path('products/', ProductView.as_view(), name='product_list'),
-    path('products/<int:pk>/',ProductView.as_view(), name='product_detail'),
-    path('products/create/', ProductView.as_view(), name='create_product'),
-    path('products/update/<int:pk>/', ProductView.as_view(), name='update_product'),
-    path('products/delete/<int:pk>/', ProductView.as_view(), name='delete_product'),
+    path('products/create/', ProductView.as_view(), {'action': 'create'}, name='create_product'),
+    path('products/update/<int:pk>/', ProductView.as_view(), {'action': 'update'}, name='update_product'),
+    path('products/delete/<int:pk>/', ProductView.as_view(), {'action': 'delete'}, name='delete_product'),
+    path('products/statistics/', ProductView.as_view(), {'action': 'statistics'}, name='product_statistics'),
 ]

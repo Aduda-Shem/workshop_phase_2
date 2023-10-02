@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<main>
+    <div class="container-fluid site-width">
+        <div class="row">
+            <div class="col-12  align-self-center">
+                <div class="sub-header mt-3 py-3 align-self-center d-sm-flex w-100 rounded">
+                    <ol class="breadcrumb bg-transparent align-self-center m-0 p-0">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">products</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title" style="font-size: 20px;">
+                            <i class="fas fa-box mr-2"></i>Products List
+                        </h4>
+                        <input type="text" style="position: relative; border-radius: 30px;" id="searchInput"
+                               placeholder="Search...">
+                        <button type="button" class="btn btn-primary ml-2" data-toggle="modal"
+                                data-target="#addProductModal">
+                            <i class="fas fa-plus"></i> Add Product
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Price</th>
+                                <th>Stock Quantity</th>
+                                <th>Category</th>
+                                <th>Subcategory</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for product in products %}
+                            <tr>
+                                <td><img src="{{ product.image.url }}" alt="{{ product.name }}"
+                                         class="product-image"></td>
+                                <td>{{ product.name }}</td>
+                                <td>{{ product.description }}</td>
+                                <td>${{ product.price }}</td>
+                                <td>{{ product.stock_quantity }}</td>
+                                <td>{{ product.category.name }}</td>
+                                <td>{{ product.subcategory.name }}</td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm">View</button>
+                                    <a href="{% url 'update_product' product.pk %}" class="btn btn-secondary btn-sm">Edit</a>
+                                    <a href="{% url 'delete_product' product.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Section -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="tab-pane fade show active" id="productStats">
+                    <p>Total Products: <span id="totalProducts">100</span></p>
+                    <p>Most Expensive Product: <span id="mostExpensiveProduct">Sample Product</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog"
+         aria-labelledby="addProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addProductModalLabel">Add Product</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="{% url 'create_product' %}" class="form">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="productName">Name</label>
+                            <input type="text" class="form-control" id="productName" name="name"
+                                   placeholder="Enter product name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productDescription">Description</label>
+                            <textarea class="form-control" id="productDescription" name="description"
+                                      placeholder="Enter product description" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="productPrice">Price</label>
+                            <input type="number" step="0.01" class="form-control" id="productPrice" name="price"
+                                   placeholder="Enter product price" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productQuantity">Stock Quantity</label>
+                            <input type="number" class="form-control" id="productQuantity"
+                                   name="stock_quantity" placeholder="Enter stock quantity" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productCategory">Category</label>
+                            <select class="form-control" id="productCategory" name="category" required>
+                                {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="productSubcategory">Subcategory</label>
+                            <select class="form-control" id="productSubcategory" name="subcategory" required>
+                                {% for subcategory in subcategories %}
+                                <option value="{{ subcategory.id }}">{{ subcategory.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="productImage">Image</label>
+                            <input type="file" class="form-control-file" id="productImage" name="image" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Product</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#addProductModal').on('shown.bs.modal', function () {
+        });
+
+        $('#editProductModal').on('shown.bs.modal', function () {
+        });
+
+        $.ajax({
+            url: '{% url 'product_statistics' %}',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                $('#totalProducts').text(data.total_products);
+                $('#mostExpensiveProduct').text(data.most_expensive_product);
+            }
+        });
+    });
+</script>
+</body>
+</html>
+{% endblock %}

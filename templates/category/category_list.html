@@ -57,12 +57,14 @@
                                         <td>{{ category.description }}</td>
                                         <td><img src="{{ category.image.url }}" alt="{{ category.name }}" width="50"></td>
                                         <td>
-                                            <button type="button" class="btn btn-primary btn-sm edit-button" data-toggle="modal" data-target="#editCategoryModal{{ category.id }}">Edit</button>
-                                            
-                                            <form method="post" action="{% url 'delete_category' category.id %}">
-                                                {% csrf_token %}
-                                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                            </form>
+                                            <div class="d-flex justify-content-between">
+                                                <button type="button" class="btn btn-primary btn-sm edit-button" data-toggle="modal" data-target="#editCategoryModal{{ category.id }}">Edit</button>
+                                                
+                                                <form method="post" action="{% url 'delete_category' category.id %}">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                                </form>
+                                            </div>
                                         </td>
                                         <td>
                                             <a href="{% url 'subcategory_category' category.id %}" class="btn btn-info btn-sm">
@@ -174,6 +176,5 @@
         margin-right: 5px;
         font-size: 12px;
     }
-
 </style>
 {% endblock %}

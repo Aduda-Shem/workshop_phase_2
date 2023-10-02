@@ -15,11 +15,10 @@ class CategoryForm(forms.ModelForm):
 class SubcategoryForm(forms.ModelForm):
     class Meta:
         model = Subcategory
-        fields = '__all__'
+        fields = ('name', 'description', 'image', 'category')         
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Subcategory Name'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Subcategory Description'}),
-            'category': forms.Select(attrs={'class': 'form-control'}),
             'image': forms.FileInput(attrs={'class': 'form-control-file'}),
         }
 

@@ -14,11 +14,6 @@ class SupplierForm(forms.ModelForm):
 
 
 class EmployeeForm(forms.Form):
-    username = forms.CharField(max_length=100)
-    email = forms.EmailField()
-    password = forms.CharField(widget=forms.PasswordInput())
-    employee_id = forms.CharField(max_length=100)
-    department = forms.CharField(max_length=100)
     first_name = forms.CharField(max_length=100)
     last_name = forms.CharField(max_length=100)
     national_id = forms.CharField(max_length=100)

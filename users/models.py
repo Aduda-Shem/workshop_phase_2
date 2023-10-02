@@ -53,10 +53,9 @@ class Supplier(models.Model):
 class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='employee')
     employee_id = models.CharField(_('Employee ID'), max_length=100, unique=True)
-    department = models.CharField(_('Department'), max_length=100)
     first_name = models.CharField(_('First Name'), max_length=100)
     last_name = models.CharField(_('Last Name'), max_length=100)
-    national_id = models.CharField(_('National ID'), max_length=100, unique=True)
+    national_id = models.CharField(_('National ID'), max_length=8, unique=True)
     phone_number = models.CharField(_('Phone Number'), max_length=100)
     salary = models.DecimalField(_('Salary'), max_digits=10, decimal_places=2)
 

@@ -191,34 +191,67 @@ def create_employee(request):
     if request.method == 'POST':
         form = EmployeeForm(request.POST)
         if form.is_valid():
-            user = User(username=form.cleaned_data['username'], email=form.cleaned_data['email'])
-            user.set_password(form.cleaned_data['password'])
+            print("Form is valid")
+            
+            national_id = form.cleaned_data['national_id']
+            employee_id = generate_employee_id(national_id)
+            
+            if employee_id is None:
+                messages.error(request, 'National ID is too short.')
+                return redirect('employee_list')
+            
+            username = form.cleaned_data['national_id']
+            
+            password = generate_password(form.cleaned_data['first_name'], national_id)
+            
+            # Create a new User instance
+            user = User(username=username, email=form.cleaned_data['national_id'] + "@example.com")
+            user.set_password(password)
             user.save()
 
+            # Create a new Employee instance and associate it with the user
             employee = Employee(
                 user=user,
-                employee_id=form.cleaned_data['employee_id'],
-                department=form.cleaned_data['department'],
+                employee_id=employee_id,
                 first_name=form.cleaned_data['first_name'],
                 last_name=form.cleaned_data['last_name'],
-                national_id=form.cleaned_data['national_id'],
+                national_id=national_id,
                 phone_number=form.cleaned_data['phone_number'],
                 salary=form.cleaned_data['salary'],
             )
             employee.save()
 
             subject = 'Welcome to Our Company'
-            html_message = render_to_string('welcome_email_template.html', {'employee': employee})
+            html_message = render_to_string('email/welcome_email_template.html', {'employee': employee})
             plain_message = strip_tags(html_message)
-            from_email = 'your_email@example.com'
+            from_email = 'noreply@netbotgroup.com'
             to_email = employee.user.email
 
             send_mail(subject, plain_message, from_email, [to_email], html_message=html_message)
 
-            messages.success(request, 'Employee created successfully.')
-            return redirect('employee_list')
-
+            messages.success(request, 'Employee created successfully, and a welcome email has been sent.')
+            return redirect('create_employee')
+        else:
+            print("Form is not valid:", form.errors)
     else:
         form = EmployeeForm()
 
     return render(request, 'users/add_employee.html', {'form': form})
+
+
+
+def generate_employee_id(national_id):
+    if len(national_id) >= 4:
+        last_4_digits = national_id[-4:]
+        return last_4_digits
+    else:
+        return None
+
+def generate_password(first_name, national_id):
+    password = f"{first_name.lower()}{national_id}"
+    return password
+
+@login_required
+def employee_list(request):
+    employees = Employee.objects.all()
+    return render(request, 'users/add_employee.html', {'employees': employees})
