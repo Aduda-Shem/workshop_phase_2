@@ -107,19 +107,23 @@ class ProductView(View):
     template_name = 'product/product_list.html'
 
     def get(self, request, action=None, pk=None):
+        categories = Category.objects.all() 
+        subcategories = Subcategory.objects.all()
+
         if action == 'create':
             form = ProductForm()
-            return render(request, self.template_name, {'form': form})
+            return render(request, self.template_name, {'form': form, 'categories': categories, 'subcategories': subcategories})
         elif action == 'update':
             product = get_object_or_404(Product, pk=pk)
             form = ProductForm(instance=product)
-            return render(request, self.template_name, {'form': form, 'product': product})
+            return render(request, self.template_name, {'form': form, 'product': product, 'categories': categories, 'subcategories': subcategories})
         elif action == 'statistics':
             return self.get_statistics(request)
 
         products = Product.objects.all()
         form = ProductForm()
-        return render(request, self.template_name, {'products': products, 'form': form})
+        return render(request, self.template_name, {'products': products, 'form': form, 'categories': categories, 'subcategories': subcategories})
+
 
     def post(self, request, action=None, pk=None):
         if action == 'create':
@@ -161,3 +165,13 @@ class ProductView(View):
         }
 
         return JsonResponse(statistics_data)
+
+def get_subcategories(request):
+    category_id = request.GET.get('category_id')
+
+    if category_id:
+        subcategories = Subcategory.objects.filter(category_id=category_id).values('id', 'name')
+    else:
+        subcategories = []
+
+    return JsonResponse({'subcategories': list(subcategories)})

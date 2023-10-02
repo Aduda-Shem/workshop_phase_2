@@ -1,7 +1,7 @@
 from django.urls import path
 from django.db.models import Sum
 
-from ecommerce.views import CategoryView, ProductView, SubcategoryView
+from ecommerce.views import CategoryView, ProductView, SubcategoryView, get_subcategories
 from .views import  DashboardView, SupplierEditView, SupplierListView, create_employee, employee_list, login
 
 urlpatterns = [
@@ -35,4 +35,7 @@ urlpatterns = [
     path('products/update/<int:pk>/', ProductView.as_view(), {'action': 'update'}, name='update_product'),
     path('products/delete/<int:pk>/', ProductView.as_view(), {'action': 'delete'}, name='delete_product'),
     path('products/statistics/', ProductView.as_view(), {'action': 'statistics'}, name='product_statistics'),
+    path('get_subcategories/', get_subcategories, name='get_subcategories'),
+
+    
 ]
