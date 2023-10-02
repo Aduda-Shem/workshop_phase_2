@@ -1,6 +1,6 @@
 # forms.py
 from django import forms
-from .models import Category, Subcategory
+from .models import Category, Product, Subcategory
 
 class CategoryForm(forms.ModelForm):
     class Meta:
@@ -22,3 +22,8 @@ class SubcategoryForm(forms.ModelForm):
             'category': forms.Select(attrs={'class': 'form-control'}),
             'image': forms.FileInput(attrs={'class': 'form-control-file'}),
         }
+
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ['name', 'description', 'price', 'stock_quantity', 'category', 'subcategory', 'image']

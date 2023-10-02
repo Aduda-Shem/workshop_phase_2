@@ -13,7 +13,14 @@ class SupplierForm(forms.ModelForm):
         fields = '__all__'
 
 
-class EmployeeForm(forms.ModelForm):
-    class Meta:
-        model = Employee
-        fields = ['user', 'employee_id', 'department', 'first_name', 'last_name', 'national_id', 'phone_number', 'salary']
+class EmployeeForm(forms.Form):
+    username = forms.CharField(max_length=100)
+    email = forms.EmailField()
+    password = forms.CharField(widget=forms.PasswordInput())
+    employee_id = forms.CharField(max_length=100)
+    department = forms.CharField(max_length=100)
+    first_name = forms.CharField(max_length=100)
+    last_name = forms.CharField(max_length=100)
+    national_id = forms.CharField(max_length=100)
+    phone_number = forms.CharField(max_length=100)
+    salary = forms.DecimalField(max_digits=10, decimal_places=2)

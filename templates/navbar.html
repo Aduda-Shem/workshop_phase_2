@@ -4,11 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mark's city Enterprise</title>
+    <title>Mark's City Enterprise</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        /* Additional custom styles can be added here */
+    </style>
 </head>
 
-<body id="main-container" class="default bg-gray-100">
+<body id="main-container" class="bg-gray-100">
     <!-- START: Pre Loader -->
     <div class="se-pre-con">
         <div class="loader"></div>
@@ -21,24 +25,21 @@
             <nav class="navbar navbar-expand-lg p-0">
                 <div class="navbar-header h-100 h4 mb-0 align-self-center logo-bar text-left">
                     <a href="index.html" class="horizontal-logo text-left flex items-center">
-                        <svg height="20pt" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512" width="20pt"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <!-- ... SVG Path Data ... -->
-                        </svg>
+                        <i class="fas fa-city text-2xl"></i>
                         <span class="h4 font-semibold align-self-center mb-0 ml-2">MACK CITY</span>
                     </a>
                 </div>
                 <div class="navbar-header h4 mb-0 text-center h-100 collapse-menu-bar">
                     <a href="#" class="sidebarCollapse" id="collapse">
-                        <i class="icon-menu"></i>
+                        <i class="fas fa-bars text-2xl"></i>
                     </a>
                 </div>
 
                 <form class="float-left d-none d-lg-block search-form">
                     <div class="form-group mb-0 position-relative">
-                        <a href="#" class="position-absolute close-button mobilesearch d-lg-none" data-toggle="dropdown"
-                            aria-expanded="false">
-                            <i class="icon-close h5"></i>
+                        <a href="#" class="position-absolute close-button mobilesearch d-lg-none"
+                            data-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-times text-xl"></i>
                         </a>
                     </div>
                 </form>
@@ -46,34 +47,32 @@
                     <ul class="ml-auto p-0 m-0 list-unstyled d-flex top-icon h-100">
                         <li class="d-inline-block align-self-center d-block d-lg-none">
                             <a href="#" class="nav-link mobilesearch" data-toggle="dropdown" aria-expanded="false">
-                                <i class="icon-magnifier h4"></i>
+                                <i class="fas fa-search text-2xl"></i>
                             </a>
                         </li>
 
                         <li class="dropdown align-self-center d-inline-block">
                             <ul class="dropdown-menu dropdown-menu-right border py-0">
-                                <li><a class="dropdown-item text-center py-2" href="#"> Read All Message <i
-                                            class="icon-arrow-right pl-2 small"></i></a></li>
+                                <li><a class="dropdown-item text-center py-2" href="#">Read All Message <i
+                                            class="fas fa-arrow-right pl-2"></i></a></li>
                             </ul>
                         </li>
                         <li class="dropdown user-profile align-self-center d-inline-block">
                             <a href="#" class="nav-link py-0" data-toggle="dropdown" aria-expanded="false">
                                 <div class="media">
-                                    <img src="dist/images/author.jpg" alt="" class="d-flex img-fluid rounded-circle"
-                                        width="29">
+                                    <img src="dist/images/author.jpg" alt=""
+                                        class="d-flex img-fluid rounded-circle" width="29">
                                 </div>
                             </a>
 
                             <div class="dropdown-menu border dropdown-menu-right p-0">
-                                <a href="{%url 'supplier_list'%}" class="dropdown-item px-2 align-self-center d-flex">
-                                    <span class="icon-user mr-2 h6 mb-0"></span> Profile</a>
+                                <a href="{% url 'supplier_list' %}" class="dropdown-item px-2 align-self-center d-flex">
+                                    <i class="fas fa-user mr-2 text-xl"></i> Profile</a>
                                 <div class="dropdown-divider"></div>
                                 <a href="#" class="dropdown-item px-2 text-danger align-self-center d-flex">
-                                    <span class="icon-logout mr-2 h6  mb-0"></span> Sign Out</a>
+                                    <i class="fas fa-sign-out-alt mr-2 text-xl"></i> Sign Out</a>
                             </div>
-
                         </li>
-
                     </ul>
                 </div>
             </nav>
@@ -86,39 +85,32 @@
         <div class="site-width">
             <!-- START: Menu -->
             <ul id="side-menu" class="sidebar-menu">
-                <li class="dropdown"><a href="#"><i class="icon-home mr-1"></i> Dashboard</a>
+                <li class="dropdown"><a href="{% url 'dashboard' %}"><i class="fas fa-home mr-1 text-xl"></i>
+                        Dashboard</a>
                     <ul>
-                        {% if not user.is_staff %}
-                        <li><a href="{%url 'dashboard'%}"><i class="icon-grid"></i> Dashboard</a></li>
-                        {% else %}
-                        <li><a href="{%url 'supplier_list'%}"><i class="icon-grid"></i> Dashboard</a></li>
-                        {% endif %}
+                        <li><a href="{% url 'dashboard' %}"><i class="fas fa-th text-xl"></i> Dashboard</a></li>
                     </ul>
                 </li>
 
-                <li class="dropdown"><a href="#"><i class="icon-grid mr-1"></i> Workshop</a>
+                <li class="dropdown"><a href="#"><i class="fas fa-cogs mr-1 text-xl"></i> Workshop</a>
                     <ul>
-                        <li><a href="{%url 'category_list'%}"><i class="icon-menu"></i>Category</a></li>
-                        <li><a href="{%url 'supplier_list'%}"><i class="icon-list"></i> Items</a></li>
-                        <li><a href="{%url 'supplier_list'%}"><i class="icon-credit-card"></i> Sales</a></li>
+                        <li><a href="{% url 'category_list' %}"><i class="fas fa-th-list text-xl"></i> Category</a></li>
+                        <li><a href="{% url 'supplier_list' %}"><i class="fas fa-list text-xl"></i> Items</a></li>
+                        <li><a href="{% url 'supplier_list' %}"><i class="fas fa-credit-card text-xl"></i> Sales</a></li>
                     </ul>
                 </li>
 
-                {% if not user.is_staff %}
-                <li class="dropdown"><a href="#"><i class="icon-user mr-1"></i> Employees</a>
+                <li class="dropdown"><a href="#"><i class="fas fa-users mr-1 text-xl"></i> Employees</a>
                     <ul>
-                        <li><a href="{%url 'supplier_list'%}"><i class="icon-plus"></i> Add Employee</a></li>
-                        <li><a href="{%url 'supplier_list'%}"><i class="fas fa-users "></i> View Employees</a></li>
+                        <li><a href="{% url 'create_employee' %}"><i class="fas fa-user-plus text-xl"></i> View Employee</a>
+                        </li>
                     </ul>
                 </li>
-                {% endif %}
 
-                <li class="dropdown"><a href="#"><i class="icon-user mr-1"></i> Suppliers</a>
+                <li class="dropdown"><a href="#"><i class="fas fa-users mr-1 text-xl"></i> Suppliers</a>
                     <ul>
-                        {% if not user.is_staff %}
-                        <li><a href="{%url 'supplier_list'%}"><i class="icon-plus"></i> Add Supplier</a></li>
-                        {% endif %}
-                        <li><a href="{%url 'supplier_list'%}"><i class="fas fa-users "></i> View Suppliers</a></li>
+                        <li><a href="{% url 'supplier_list' %}"><i class="fas fa-user-plus text-xl"></i> Add Supplier</a></li>
+                        <li><a href="{% url 'supplier_list' %}"><i class="fas fa-users text-xl"></i> View Suppliers</a></li>
                     </ul>
                 </li>
             </ul>

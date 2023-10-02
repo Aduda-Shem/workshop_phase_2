@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 <style>
@@ -24,50 +25,17 @@
     <!-- Tabs for Add and View -->
     <ul class="nav nav-tabs" id="employeeTabs">
         <li class="nav-item">
-            <a class="nav-link active" id="add-tab" data-toggle="tab" href="#addEmployee">Add Employee</a>
+            <a class="nav-link active" id="view-tab" data-toggle="tab" href="#viewEmployees">View Employees</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" id="view-tab" data-toggle="tab" href="#viewEmployees">View Employees</a>
+            <a class="nav-link" id="add-tab" data-toggle="tab" href="#addEmployee">Add Employee</a>
         </li>
     </ul>
 
     <!-- Tab Content -->
     <div class="tab-content">
-        <!-- Add Employee Tab -->
-        <div class="tab-pane fade show active" id="addEmployee">
-            <div class="row mt-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h6 class="card-title">Add Employee</h6>
-                        </div>
-                        <div class="card-content">
-                            <div class="card-body">
-                                <!-- Add Employee Form Here -->
-                                <form>
-                                    <!-- Form inputs go here -->
-                                    <div class="form-group">
-                                        <label for="employeeName">Employee Name</label>
-                                        <input type="text" class="form-control" id="employeeName" placeholder="Enter name">
-                                    </div>
-
-                                    <div class="form-group col-md-6">
-                                        <label for="inputEmail4">Email</label>
-                                        <input type="email" class="form-control rounded" id="inputEmail4" placeholder="Email">
-                                      </div>
-                                
-
-                                    <button type="submit" class="btn btn-primary">Add Employee</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- View Employees Tab -->
-        <div class="tab-pane fade" id="viewEmployees">
+        <div class="tab-pane fade show active" id="viewEmployees">
             <div class="row mt-4">
                 <div class="col-12">
                     <div class="card">
@@ -123,6 +91,38 @@
                                     </tbody>
                                 </table>
                                 <!-- End of Employee List Table -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Employee Tab -->
+        <div class="tab-pane fade" id="addEmployee">
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="card-title">Add Employee</h6>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-body">
+                                <!-- Add Employee Form Here -->
+                                <form>
+                                    <!-- Form inputs go here -->
+                                    <div class="form-group">
+                                        <label for="employeeName">Employee Name</label>
+                                        <input type="text" class="form-control" id="employeeName" placeholder="Enter name">
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <label for="inputEmail4">Email</label>
+                                        <input type="email" class="form-control rounded" id="inputEmail4" placeholder="Email">
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary">Add Employee</button>
+                                </form>
                             </div>
                         </div>
                     </div>

@@ -19,7 +19,6 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
-    # Add related_name to resolve clashes
     groups = models.ManyToManyField(Group, verbose_name=_('groups'), blank=True, related_name='custom_user_set')
     user_permissions = models.ManyToManyField(
         Permission,

@@ -54,6 +54,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="col-12 col-sm-6 col-xl-3 mt-3">
                     <div class="card">
                         <div class="card-body">
@@ -68,6 +69,7 @@
                         </div>
                     </div>
                 </div>
+                
                 <div class="col-12 col-sm-6 col-xl-3 mt-3">
                     <div class="card">
                         <div class="card-body">
@@ -147,12 +149,12 @@
                                     {% for sale_record in recent_sales %}
                                     <tr>
                                         <td>{{ sale_record.id }}</td>
-                                        <td>{{ sale_record.product.name }}</td> <!-- Replace with the actual field name for the product -->
-                                        <td>{{ sale_record.point_of_sale.employee.name }}</td> <!-- Replace with the actual field name for the employee -->
+                                        <td>{{ sale_record.product.name }}</td> 
+                                        <td>{{ sale_record.point_of_sale.employee.name }}</td>
                                         <td>{{ sale_record.quantity_sold }}</td>
                                         <td>KES {{ sale_record.total_amount }}</td>
-                                        <td>{{ sale_record.sale_datetime }}</td> <!-- Replace with the actual field name for the sale date -->
-                                        <td><span class="badge outline-badge-Info">Paid</span></td> <!-- Replace with the actual field name for the sale status -->
+                                        <td>{{ sale_record.sale_datetime }}</td> 
+                                        <!-- <td><span class="badge outline-badge-Info">Paid</span></td>  -->
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -161,7 +163,6 @@
                     </div>
                 </div>
 
-                <!-- Display the sales chart -->
                 <div class="col-12 mt-4">
                     <div class="card">
                         <div class="card-header">

@@ -60,7 +60,6 @@ MIDDLEWARE = [
 
 AUTH_USER_MODEL = 'users.User'
 
-
 ROOT_URLCONF = 'workshop_dockerized.urls'
 
 TEMPLATES = [
@@ -84,7 +83,6 @@ WSGI_APPLICATION = 'workshop_dockerized.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -99,7 +97,6 @@ DATABASES = {
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',

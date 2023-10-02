@@ -1,6 +1,7 @@
 from datetime import date
 import json
 from django.contrib.auth.views import LoginView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
@@ -9,8 +10,8 @@ from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 from ecommerce.models import Category, Product, SaleRecord
 
-from users.forms import LoginForm, SupplierForm
-from .models import Company, Employee, Supplier
+from users.forms import EmployeeForm, LoginForm, SupplierForm
+from .models import Company, Employee, Supplier, User
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, logout as auth_logout, login as auth_login
@@ -23,7 +24,13 @@ from django.views.decorators.http import require_POST
 from django.utils import timezone
 from datetime import date, timedelta
 from django.db.models import Sum
+from django.urls import reverse
 
+
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.contrib import messages
 
 # Authentication Views
 def login(request):
@@ -148,3 +155,70 @@ class SupplierListView(View):
         supplier = get_object_or_404(Supplier, pk=pk)
         supplier.delete()
         return redirect('supplier_list')
+
+    def get_success_url(self):
+        return reverse('supplier_list')
+
+class SupplierEditView(LoginRequiredMixin, View):
+    template_name = 'suppliers/supplier_list.html'
+
+    def get(self, request, supplier_id):
+        supplier = get_object_or_404(Supplier, id=supplier_id)
+        form = SupplierForm(instance=supplier)
+        context = {
+            'form': form,
+            'supplier': supplier,
+        }
+        return render(request, self.template_name, context)
+    
+    def post(self, request, supplier_id):
+        supplier = get_object_or_404(Supplier, id=supplier_id)
+        form = SupplierForm(request.POST, instance=supplier)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Supplier edited successfully.")
+            return redirect('supplier_list')
+        
+        context = {
+            'form': form,
+            'supplier': supplier,
+        }
+        return render(request, self.template_name, context)
+    
+
+@login_required
+def create_employee(request):
+    if request.method == 'POST':
+        form = EmployeeForm(request.POST)
+        if form.is_valid():
+            user = User(username=form.cleaned_data['username'], email=form.cleaned_data['email'])
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+
+            employee = Employee(
+                user=user,
+                employee_id=form.cleaned_data['employee_id'],
+                department=form.cleaned_data['department'],
+                first_name=form.cleaned_data['first_name'],
+                last_name=form.cleaned_data['last_name'],
+                national_id=form.cleaned_data['national_id'],
+                phone_number=form.cleaned_data['phone_number'],
+                salary=form.cleaned_data['salary'],
+            )
+            employee.save()
+
+            subject = 'Welcome to Our Company'
+            html_message = render_to_string('welcome_email_template.html', {'employee': employee})
+            plain_message = strip_tags(html_message)
+            from_email = 'your_email@example.com'
+            to_email = employee.user.email
+
+            send_mail(subject, plain_message, from_email, [to_email], html_message=html_message)
+
+            messages.success(request, 'Employee created successfully.')
+            return redirect('employee_list')
+
+    else:
+        form = EmployeeForm()
+
+    return render(request, 'users/add_employee.html', {'form': form})
