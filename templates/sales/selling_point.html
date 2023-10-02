@@ -2,96 +2,189 @@
 {% load static %}
 
 {% block content %}
+
+
 <main>
-    <div class="container mx-auto px-4 py-8">
-        <div class="flex items-center justify-between mb-4">
-            <h1 class="text-3xl font-semibold">Point of Sale</h1>
-            <button
-                id="clearCartBtn"
-                class="px-4 py-2 bg-red-500 text-white rounded-md shadow-md hover:bg-red-600"
-                onclick="clearCart()"
-            >
-                Clear Cart
-            </button>
-        </div>
-        <div class="bg-white rounded-lg shadow-md mb-4 p-4">
-            <h2 class="text-xl font-semibold mb-4">Shopping Cart</h2>
-            <ul id="cartItems" class="mb-4">
-                <!-- Cart items will be added dynamically here -->
-            </ul>
-            <p class="mb-2 font-semibold">Total Price:</p>
-            <p id="totalPrice" class="text-xl font-semibold">KES 0.00</p>
-        </div>
-        <div class="bg-white rounded-lg shadow-md p-4">
-            <div class="relative mb-4">
-                <input
-                    type="text"
-                    id="itemSearch"
-                    placeholder="Search by item name..."
-                    class="block w-full py-2 pl-10 pr-4 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    oninput="filterItems()"
-                />
-                <button
-                    onclick="clearSearch()"
-                    class="absolute top-2 right-3 px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600"
-                >
-                    Clear
-                </button>
+    <div class="container-fluid site-width">
+        <div class="row">
+            <div class="col-12 align-self-center">
+                <h2>Point of Sale (POS)</h2>
             </div>
-            <table class="table w-full dataTable table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th class="px-4 py-2">Category</th>
-                        <th class="px-4 py-2">Name</th>
-                        <th class="px-4 py-2">Price</th>
-                        <th class="px-4 py-2">Quantity</th>
-                        <th class="px-4 py-2">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for category in categories_with_items %}
-                        {% for subcategory in category.subcategory_set.all %}
-                            {% for item in subcategory.item_set.all %}
-                                <tr>
-                                    {% if item.quantity > 0 %}
-                                        <td class="px-4 py-2">{{ category.name }}</td>
-                                        <td class="px-4 py-2">{{ item.name }}</td>
-                                        <td class="px-4 py-2">KES {{ item.price }}</td>
-                                        <td class="px-4 py-2">{{ item.quantity }}</td>
-                                    {% else %}
-                                        <td class="px-4 py-2 text-red-500" colspan="4">Stock Out</td>
-                                    {% endif %}
-                                    <td class="px-4 py-2">
-                                        <form onsubmit="addToCart(event)" data-item-id="{{ item.id }}">
-                                            {% csrf_token %}
-                                            <input
-                                                type="number"
-                                                name="quantity"
-                                                value="1"
-                                                min="1"
-                                                class="w-16 px-2 py-1 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                            />
-                                            <button
-                                                type="submit"
-                                                class="ml-2 px-4 py-2 bg-green-500 text-white rounded-md shadow-sm hover:bg-green-600"
-                                            >
-                                                Add to Cart
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        {% endfor %}
-                    {% endfor %}
-                </tbody>
-            </table>
         </div>
-        <button
-            id="checkoutBtn"
-            class="px-4 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600"
-        >
-            Checkout
-        </button>
+
+        <div class="row mt-4">
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="post" id="add-to-cart-form">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="product_name">Select Product:</label>
+                                <select class="form-control" id="product_name" name="product_name">
+                                    <option value="">Select a product</option>
+                                    {% for product in products %}
+                                    <option value="{{ product.id }}" data-price="{{ product.price }}">{{ product.name }} - ${{ product.price }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="quantity">Quantity:</label>
+                                <input type="number" class="form-control" id="quantity" name="quantity" value="1" min="1" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add to Cart</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h4>Shopping Cart</h4>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Price</th>
+                                        <th>Quantity</th>
+                                        <th>Total</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cart-table-body">
+                                    {% for item in cart %}
+                                    <tr data-id="{{ item.product.id }}">
+                                        <td>{{ item.product.name }}</td>
+                                        <td>${{ item.product.price }}</td>
+                                        <td>
+                                            <input type="number" class="form-control quantity-input" value="{{ item.quantity }}" min="1" required>
+                                        </td>
+                                        <td class="total-cell">${{ item.total }}</td>
+                                        <td>
+                                            <button class="btn btn-danger btn-sm remove-item">Remove</button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <p>Total: $<span id="cart-total">{{ total }}</span></p>
+                        <button class="btn btn-success btn-block" id="make-sale-button">Make Sale</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </main>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Add to cart form submission
+        $("#add-to-cart-form").submit(function (e) {
+            e.preventDefault();
+            var productId = $("#product_name").val();
+            var quantity = parseInt($("#quantity").val());
+            var productPrice = parseFloat($("#product_name option:selected").data("price"));
+            var productName = $("#product_name option:selected").text();
+
+            if (productId && quantity > 0) {
+                var row = $("#cart-table-body tr[data-id='" + productId + "']");
+                if (row.length > 0) {
+                    // Product is already in cart, update quantity and total
+                    var currentQuantity = parseInt(row.find(".quantity-input").val());
+                    var newQuantity = currentQuantity + quantity;
+                    row.find(".quantity-input").val(newQuantity);
+                    var newTotal = newQuantity * productPrice;
+                    row.find(".total-cell").text("$" + newTotal.toFixed(2));
+                } else {
+                    // Product is not in cart, add a new row
+                    var newRow = $("<tr data-id='" + productId + "'>");
+                    newRow.html("<td>" + productName + "</td>" +
+                        "<td>$" + productPrice.toFixed(2) + "</td>" +
+                        "<td><input type='number' class='form-control quantity-input' value='" + quantity + "' min='1' required></td>" +
+                        "<td class='total-cell'>$" + (quantity * productPrice).toFixed(2) + "</td>" +
+                        "<td><button class='btn btn-danger btn-sm remove-item'>Remove</button></td>");
+                    $("#cart-table-body").append(newRow);
+                }
+
+                updateCartTotal();
+            }
+        });
+
+        $(document).on("click", ".remove-item", function () {
+            var row = $(this).closest("tr");
+            var productId = row.data("id");
+            row.remove();
+            updateCartTotal();
+        });
+
+        function updateCartTotal() {
+            var total = 0;
+            $("#cart-table-body tr").each(function () {
+                var quantity = parseInt($(this).find(".quantity-input").val());
+                var price = parseFloat($(this).find("td:nth-child(2)").text().replace("$", ""));
+                var itemTotal = quantity * price;
+                total += itemTotal;
+                $(this).find(".total-cell").text("$" + itemTotal.toFixed(2));
+            });
+            $("#cart-total").text(total.toFixed(2));
+        }
+
+        $("#make-sale-button").click(function () {
+            alert("Sale completed!");
+        });
+    });
+</script>
+
+<style>
+
+.main {
+    padding: 20px;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#add-to-cart-form {
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+}
+
+#cart-table-body {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.table {
+    font-size: 14px;
+}
+
+#make-sale-button {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+}
+
+#cart-total {
+    font-weight: bold;
+    font-size: 18px;
+    color: #333;
+}
+
+</style>
+
 {% endblock %}

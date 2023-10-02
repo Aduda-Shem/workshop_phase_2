@@ -1,6 +1,7 @@
 # forms.py
 from django import forms
 from .models import Category, Product, Subcategory
+from django_select2.forms import ModelSelect2MultipleWidget
 
 class CategoryForm(forms.ModelForm):
     class Meta:
@@ -26,3 +27,13 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = ['name', 'description', 'price', 'stock_quantity', 'category', 'subcategory', 'image']
+
+
+class ProductNameForm(forms.Form):
+    product_ids = forms.ModelMultipleChoiceField(
+        queryset=Product.objects.all(),
+        widget=ModelSelect2MultipleWidget(
+            model=Product,
+            search_fields=['name__icontains'],
+        ),
+    )

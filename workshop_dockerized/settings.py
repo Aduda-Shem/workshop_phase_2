@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users',
     'simple_history',
-    'ecommerce'
+    'ecommerce',
+    'django_select2',
 
 ]
 

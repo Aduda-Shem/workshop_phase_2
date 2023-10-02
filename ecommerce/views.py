@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.views import View
 from django.db.models import Sum
 from .models import Category, Product, Subcategory
-from .forms import CategoryForm, ProductForm, SubcategoryForm
+from .forms import CategoryForm, ProductForm, ProductNameForm, SubcategoryForm
 
 class CategoryView(View):
     template_name = 'category/category_list.html'
@@ -175,3 +175,23 @@ def get_subcategories(request):
         subcategories = []
 
     return JsonResponse({'subcategories': list(subcategories)})
+
+
+
+def pos_view(request):
+    cart = []
+    total = 0
+
+    if request.method == 'POST':
+        form = ProductNameForm(request.POST)
+        if form.is_valid():
+            product_ids = form.cleaned_data['product_ids']
+            products = Product.objects.filter(id__in=product_ids)
+
+            for product in products:
+                cart.append(product)
+                total += product.price
+
+    products = Product.objects.all()
+
+    return render(request, 'sales/selling_point.html', {'cart': cart, 'total': total, 'products': products})

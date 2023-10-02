@@ -63,7 +63,8 @@ def logout(request):
 @method_decorator(login_required, name='dispatch')
 class DashboardView(View):
     def get(self, request):
-        total_price = sum(product.price * product.stock_quantity for product in Product.objects.all())
+        # Initialize total_price for all products
+        total_price_all_products = sum(product.price * product.stock_quantity for product in Product.objects.all())
 
         employee_count = Employee.objects.count()
         supplier_count = Supplier.objects.count()
@@ -71,14 +72,14 @@ class DashboardView(View):
         today_sale = SaleRecord.objects.filter(point_of_sale__sale_datetime__date=date.today()).aggregate(total_sales=Sum('total_amount'))['total_sales'] or 0
 
         today = date.today()
-        six_months_ago = today - timedelta(days=180)  
+        six_months_ago = today - timedelta(days=180)
 
         sales_data = SaleRecord.objects.filter(point_of_sale__sale_datetime__date__gte=six_months_ago) \
             .values('point_of_sale__sale_datetime__month') \
             .annotate(total_sales=Sum('total_amount')) \
             .order_by('point_of_sale__sale_datetime__month')
 
-        labels = [month for month in range(1, 13)] 
+        labels = [month for month in range(1, 13)]
         sales_values = [sales['total_sales'] if sales['total_sales'] else 0 for sales in sales_data]
 
         sales_chart_data = {
@@ -105,7 +106,7 @@ class DashboardView(View):
         recent_sales = SaleRecord.objects.order_by('-sale_datetime')[:10]
 
         context = {
-            'total_price': total_price,
+            'total_price_all_products': total_price_all_products,  # Total price for all products
             'employee': employee_count,
             'today_sale': today_sale,
             'supplier': supplier_count,
@@ -255,3 +256,7 @@ def generate_password(first_name, national_id):
 def employee_list(request):
     employees = Employee.objects.all()
     return render(request, 'users/add_employee.html', {'employees': employees})
+
+
+
+
