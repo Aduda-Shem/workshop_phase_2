@@ -32,6 +32,9 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.contrib import messages
 
+from decimal import Decimal
+from django.core.serializers.json import DjangoJSONEncoder
+
 # Authentication Views
 def login(request):
     if request.method == 'POST':
@@ -60,10 +63,14 @@ def logout(request):
     return redirect('login')
 
 
+class DecimalEncoder(DjangoJSONEncoder):
+    def default(self, o):
+        if isinstance(o, Decimal):
+            return str(o) 
+        return super().default(o)
 @method_decorator(login_required, name='dispatch')
 class DashboardView(View):
     def get(self, request):
-        # Initialize total_price for all products
         total_price_all_products = sum(product.price * product.stock_quantity for product in Product.objects.all())
 
         employee_count = Employee.objects.count()
@@ -79,7 +86,7 @@ class DashboardView(View):
             .annotate(total_sales=Sum('total_amount')) \
             .order_by('point_of_sale__sale_datetime__month')
 
-        labels = [month for month in range(1, 13)]
+        labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
         sales_values = [sales['total_sales'] if sales['total_sales'] else 0 for sales in sales_data]
 
         sales_chart_data = {
@@ -95,6 +102,7 @@ class DashboardView(View):
             ],
         }
 
+
         categories = Category.objects.all()
         categories_with_total_stock = []
         for category in categories:
@@ -106,18 +114,16 @@ class DashboardView(View):
         recent_sales = SaleRecord.objects.order_by('-sale_datetime')[:10]
 
         context = {
-            'total_price_all_products': total_price_all_products,  # Total price for all products
-            'employee': employee_count,
+            'total_price_all_products': total_price_all_products,  
             'today_sale': today_sale,
             'supplier': supplier_count,
             'categories': categories,
             'categories_with_total_stock': categories_with_total_stock,
             'recent_sales': recent_sales,
-            'sales_chart_data': json.dumps(sales_chart_data),
+            'sales_chart_data': json.dumps(sales_chart_data, cls=DecimalEncoder),  
         }
 
         return render(request, 'dashboard.html', context)
-
 @method_decorator(login_required, name='dispatch')
 class SupplierListView(View):
     template_name = 'suppliers/supplier_list.html'

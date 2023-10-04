@@ -1,10 +1,12 @@
+import json
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.views import View
 from django.db.models import Sum
-from .models import Category, Product, Subcategory
-from .forms import CategoryForm, ProductForm, ProductNameForm, SubcategoryForm
+from .models import Category, PointOfSale, Product, SaleRecord, Subcategory
+from .forms import CategoryForm, ProductForm, ProductNameForm, ProductSelectionForm, SubcategoryForm
+from django.db import transaction
 
 class CategoryView(View):
     template_name = 'category/category_list.html'
@@ -129,11 +131,12 @@ class ProductView(View):
         if action == 'create':
             form = ProductForm(request.POST, request.FILES)
             if form.is_valid():
-                form.save()
+                product = form.save() 
                 messages.success(request, 'Product created successfully.')
                 return redirect('product_list')
             else:
                 messages.error(request, 'Product creation failed.')
+
         elif action == 'update':
             product = get_object_or_404(Product, pk=pk)
             form = ProductForm(request.POST, request.FILES, instance=product)
@@ -182,16 +185,67 @@ def pos_view(request):
     cart = []
     total = 0
 
-    if request.method == 'POST':
-        form = ProductNameForm(request.POST)
-        if form.is_valid():
-            product_ids = form.cleaned_data['product_ids']
-            products = Product.objects.filter(id__in=product_ids)
-
-            for product in products:
-                cart.append(product)
-                total += product.price
-
+    product_name_form = ProductNameForm()
     products = Product.objects.all()
 
-    return render(request, 'sales/selling_point.html', {'cart': cart, 'total': total, 'products': products})
+    if request.method == 'POST':
+        form = ProductSelectionForm(request.POST)
+        if form.is_valid():
+            product = form.cleaned_data['product_name']
+            quantity = form.cleaned_data['quantity']
+
+            if product.stock_quantity >= quantity:
+                cart_item = {
+                    'product': product,
+                    'quantity': quantity,
+                    'subtotal': product.price * quantity,
+                }
+                cart.append(cart_item)
+                total += cart_item['subtotal']
+
+                product.stock_quantity -= quantity
+                product.save()
+
+    return render(request, 'sales/selling_point.html', {'cart': cart, 'total': total, 'products': products, 'product_name_form': product_name_form})
+
+
+
+def complete_sale(request):
+    if request.method == 'POST':
+        cart_data = json.loads(request.body.decode('utf-8'))
+
+        if cart_data:
+            try:
+                with transaction.atomic():
+                    point_of_sale = PointOfSale.objects.create(
+                        seller=request.user,
+                        customer=request.user,
+                        payment_method="Cash"
+                    )
+
+                    for cart_item in cart_data:
+                        product_id = cart_item['product_id']
+                        quantity = cart_item['quantity']
+
+                        product = Product.objects.get(id=product_id)
+
+                        if product.stock_quantity >= quantity:
+                            total_amount = product.price * quantity
+
+                            SaleRecord.objects.create(
+                                point_of_sale=point_of_sale,
+                                product=product,
+                                quantity_sold=quantity,
+                                total_amount=total_amount
+                            )
+
+                            product.stock_quantity -= quantity
+                            product.save()
+                        else:
+                            return JsonResponse({'success': False, 'error_message': 'Insufficient stock'})
+
+                return JsonResponse({'success': True})
+            except Exception as e:
+                return JsonResponse({'success': False, 'error_message': str(e)})
+
+    return JsonResponse({'success': False, 'error_message': 'Invalid request'})

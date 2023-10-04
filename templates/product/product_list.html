@@ -46,8 +46,10 @@
                             <tbody>
                                 {% for product in products %}
                                 <tr>
-                                    <td><img src="{{ product.image.url }}" alt="{{ product.name }}"
-                                            class="product-image"></td>
+                                    <td>
+                                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image"
+                                             style="max-width: 100px; max-height: 100px;">
+                                    </td>                                    
                                     <td>{{ product.name }}</td>
                                     <td>{{ product.description }}</td>
                                     <td>kes {{ product.price }}</td>
@@ -55,7 +57,6 @@
                                     <td>{{ product.category.name }}</td>
                                     <td>{{ product.subcategory.name }}</td>
                                     <td>
-                                        <button class="btn btn-primary btn-sm">View</button>
                                         <button class="btn btn-secondary btn-sm edit-product-button"
                                             data-product-id="{{ product.pk }}"
                                             data-product-name="{{ product.name }}"
@@ -80,16 +81,6 @@
             </div>
         </div>
 
-        <!-- Statistics Section -->
-        <div class="row mt-4">
-            <div class="col-12">
-                <div class="tab-pane fade show active" id="productStats">
-                    <p>Total Products: <span id="totalProducts">100</span></p>
-                    <p>Most Expensive Product: <span id="mostExpensiveProduct">Sample Product</span></p>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Add Product Modal -->
     <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel"
@@ -103,7 +94,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form method="POST" action="{% url 'create_product' %}" class="form">
+                    <form method="POST" enctype="multipart/form-data" action="{% url 'create_product' %}" class="form">
                         {% csrf_token %}
                         <div class="form-group">
                             <label for="productName">Name</label>
@@ -162,7 +153,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form method="POST" id="editProductForm" class="form">
+                    <form method="POST" enctype="multipart/form-data" id="editProductForm" class="form">
                         {% csrf_token %}
                         <div class="form-group">
                             <label for="editProductName">Name</label>
@@ -253,8 +244,6 @@
             $('#editProductQuantity').val(productQuantity);
             $('#editProductCategory').val(productCategoryId);
             $('#editProductSubcategory').val(productSubcategoryId);
-
-            // Open the modal
             $('#editProductModal').modal('show');
         });
 
@@ -262,10 +251,8 @@
         $('.delete-product-button').click(function () {
             var productId = $(this).data('product-id');
 
-            // Set the form action for delete
             $('#deleteProductForm').attr('action', '/delete_product/' + productId + '/');
 
-            // Open the delete modal
             $('#deleteProductModal').modal('show');
         });
 
@@ -280,7 +267,7 @@
 
             // Fetch subcategories based on the selected category using AJAX
             $.ajax({
-                url: '{% url 'get_subcategories' %}', // Use the URL pattern name
+                url: '{% url 'get_subcategories' %}',
                 type: 'GET',
                 data: { category_id: categoryId },
                 success: function (data) {

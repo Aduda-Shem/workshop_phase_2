@@ -2,8 +2,6 @@
 {% load static %}
 
 {% block content %}
-
-
 <main>
     <div class="container-fluid site-width">
         <div class="row">
@@ -78,7 +76,42 @@
     </div>
 </main>
 
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Success</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Sale completed!
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">Error</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Sale failed. Please try again.
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
     $(document).ready(function () {
         // Add to cart form submission
@@ -133,10 +166,54 @@
         }
 
         $("#make-sale-button").click(function () {
-            alert("Sale completed!");
+            var cartData = [];
+            $("#cart-table-body tr").each(function () {
+                var productId = $(this).data("id");
+                var quantity = parseInt($(this).find(".quantity-input").val());
+                cartData.push({
+                    product_id: productId,
+                    quantity: quantity
+                });
+            });
+
+            var completeSaleUrl = "{% url 'complete_sale' %}";
+
+            var csrfToken = "{{ csrf_token }}";
+
+            $.ajaxSetup({
+                headers: {
+                    "X-CSRFToken": csrfToken
+                }
+            });
+
+            $.ajax({
+                url: completeSaleUrl,
+                method: "POST",
+                data: JSON.stringify(cartData),
+                contentType: "application/json",
+                success: function (response) {
+                    if (response.success) {
+                        // Show the success modal
+                        $("#successModal").modal('show');
+                        
+                        // Clear the cart and update the UI
+                        $("#cart-table-body").empty();
+                        $("#cart-total").text("0.00");
+
+                        // Hide the modal after a delay (e.g., 2 seconds)
+                        setTimeout(function() {
+                            $("#successModal").modal('hide');
+                        }, 2000);
+                    } else {
+                        // Show the error modal
+                        $("#errorModal").modal('show');
+                    }
+                }
+            });
         });
     });
 </script>
+
 
 <style>
 

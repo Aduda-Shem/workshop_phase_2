@@ -139,10 +139,9 @@
                                         <th>ID</th>
                                         <th>Item</th>
                                         <th>Sold By</th>
-                                        <th>Amount Sold</th>
+                                        <th>Quantity Sold</th>
                                         <th>Amount</th>
                                         <th>Date</th>
-                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -154,7 +153,6 @@
                                         <td>{{ sale_record.quantity_sold }}</td>
                                         <td>KES {{ sale_record.total_amount }}</td>
                                         <td>{{ sale_record.sale_datetime }}</td> 
-                                        <!-- <td><span class="badge outline-badge-Info">Paid</span></td>  -->
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -169,7 +167,7 @@
                             <h6 class="card-title">Monthly Sales Chart</h6>
                         </div>
                         <div class="card-body">
-                            <canvas id="salesChart" width="400" height="200"></canvas>
+                            <canvas id="salesChart" width="400" height="350"></canvas>
                         </div>
                     </div>
                 </div>
@@ -178,14 +176,19 @@
     </main>
     <!-- END: Main Content -->
 
-    <!-- JavaScript to render the sales chart -->
-    <script>
+<!-- Include Chart.js library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
         const salesData = {{ sales_chart_data|safe }};
         const ctx = document.getElementById('salesChart').getContext('2d');
         new Chart(ctx, {
-            type: 'line',
+            type: 'line', 
             data: salesData,
             options: {
+                responsive: true, 
+                maintainAspectRatio: false, 
                 scales: {
                     y: {
                         beginAtZero: true
@@ -193,5 +196,6 @@
                 }
             }
         });
-    </script>
+    });
+</script>
 {% endblock %}

@@ -37,3 +37,7 @@ class ProductNameForm(forms.Form):
             search_fields=['name__icontains'],
         ),
     )
+
+class ProductSelectionForm(forms.Form):
+    product_name = forms.ModelChoiceField(queryset=Product.objects.all(), empty_label="Select a product")
+    quantity = forms.IntegerField(min_value=1)
