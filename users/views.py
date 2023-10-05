@@ -34,6 +34,10 @@ from django.contrib import messages
 
 from decimal import Decimal
 from django.core.serializers.json import DjangoJSONEncoder
+from django.contrib.auth import get_user_model
+
+import random
+import string
 
 # Authentication Views
 def login(request):
@@ -196,35 +200,29 @@ class SupplierEditView(LoginRequiredMixin, View):
 @login_required
 def create_employee(request):
     if request.method == 'POST':
-        form = EmployeeForm(request.POST)
-        if form.is_valid():
-            print("Form is valid")
-            
-            national_id = form.cleaned_data['national_id']
-            employee_id = generate_employee_id(national_id)
-            
-            if employee_id is None:
-                messages.error(request, 'National ID is too short.')
-                return redirect('employee_list')
-            
-            username = form.cleaned_data['national_id']
-            
-            password = generate_password(form.cleaned_data['first_name'], national_id)
-            
-            # Create a new User instance
-            user = User(username=username, email=form.cleaned_data['national_id'] + "@example.com")
-            user.set_password(password)
+        employee_form = EmployeeForm(request.POST)
+        if employee_form.is_valid():
+            User = get_user_model()
+
+            username = generate_unique_username(employee_form.cleaned_data['email'])
+            password = generate_password()
+
+            user = User(
+                email=employee_form.cleaned_data['email'],
+                username=username,
+                password=password,  
+                is_staff=True,
+            )
             user.save()
 
-            # Create a new Employee instance and associate it with the user
             employee = Employee(
                 user=user,
-                employee_id=employee_id,
-                first_name=form.cleaned_data['first_name'],
-                last_name=form.cleaned_data['last_name'],
-                national_id=national_id,
-                phone_number=form.cleaned_data['phone_number'],
-                salary=form.cleaned_data['salary'],
+                employee_id=generate_employee_id(employee_form.cleaned_data['national_id']),
+                first_name=employee_form.cleaned_data['first_name'],
+                last_name=employee_form.cleaned_data['last_name'],
+                national_id=employee_form.cleaned_data['national_id'],
+                phone_number=employee_form.cleaned_data['phone_number'],
+                salary=employee_form.cleaned_data['salary'],
             )
             employee.save()
 
@@ -232,20 +230,18 @@ def create_employee(request):
             html_message = render_to_string('email/welcome_email_template.html', {'employee': employee})
             plain_message = strip_tags(html_message)
             from_email = 'noreply@netbotgroup.com'
-            to_email = employee.user.email
+            to_email = user.email
 
             send_mail(subject, plain_message, from_email, [to_email], html_message=html_message)
 
             messages.success(request, 'Employee created successfully, and a welcome email has been sent.')
             return redirect('create_employee')
         else:
-            print("Form is not valid:", form.errors)
+            print("Form is not valid:", employee_form.errors)
     else:
-        form = EmployeeForm()
+        employee_form = EmployeeForm()
 
-    return render(request, 'users/add_employee.html', {'form': form})
-
-
+    return render(request, 'users/add_employee.html', {'employee_form': employee_form})
 
 def generate_employee_id(national_id):
     if len(national_id) >= 4:
@@ -254,15 +250,22 @@ def generate_employee_id(national_id):
     else:
         return None
 
-def generate_password(first_name, national_id):
-    password = f"{first_name.lower()}{national_id}"
+def generate_password():
+    password_length = 8
+    characters = string.ascii_lowercase + string.digits
+    password = ''.join(random.choice(characters) for _ in range(password_length))
     return password
+
+def generate_unique_username(email):
+    username = email.split('@')[0]
+    return username
+
 
 @login_required
 def employee_list(request):
-    employees = Employee.objects.all()
+    employees = Employee.objects.all()  
+    print("employees",employees)
     return render(request, 'users/add_employee.html', {'employees': employees})
-
 
 
 

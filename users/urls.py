@@ -5,7 +5,7 @@ from ecommerce.views import CategoryView, ProductView, SubcategoryView, complete
 from .views import  DashboardView, SupplierEditView, SupplierListView, create_employee, employee_list, login
 
 urlpatterns = [
-    path('login/', login, name='login'),
+    path('accounts/login/', login, name='login'),
     path('', DashboardView.as_view(), name='dashboard'),
 
     # URLs for managing Suppliers
