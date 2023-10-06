@@ -58,7 +58,7 @@
                             </ul>
                         </li>
                         <li class="dropdown user-profile align-self-center d-inline-block">
-                            <a href="#" class="nav-link py-0" data-toggle="dropdown" aria-expanded="false">
+                            <a href="{% url 'user_profile'%}" class="nav-link py-0" data-toggle="dropdown" aria-expanded="false">
                                 <div class="media">
                                     <img src="dist/images/author.jpg" alt=""
                                         class="d-flex img-fluid rounded-circle" width="29">
@@ -66,10 +66,10 @@
                             </a>
 
                             <div class="dropdown-menu border dropdown-menu-right p-0">
-                                <a href="{% url 'supplier_list' %}" class="dropdown-item px-2 align-self-center d-flex">
+                                <a href="{% url 'user_profile' %}" class="dropdown-item px-2 align-self-center d-flex">
                                     <i class="fas fa-user mr-2 text-xl"></i> Profile</a>
                                 <div class="dropdown-divider"></div>
-                                <a href="#" class="dropdown-item px-2 text-danger align-self-center d-flex">
+                                <a href="{% url 'logout' %}" class="dropdown-item px-2 text-danger align-self-center d-flex">
                                     <i class="fas fa-sign-out-alt mr-2 text-xl"></i> Sign Out</a>
                             </div>
                         </li>

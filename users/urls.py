@@ -2,10 +2,12 @@ from django.urls import path
 from django.db.models import Sum
 
 from ecommerce.views import CategoryView, ProductView, SubcategoryView, best_selling_product_report, complete_sale, employee_performance_report, get_subcategories, pos_view, stock_report
-from .views import  DashboardView, SupplierDeleteView, SupplierEditView, SupplierListView, activate_employee, create_employee, edit_employee, employee_list, login, suspend_employee
+from .views import  DashboardView, SupplierDeleteView, SupplierEditView, SupplierListView, UserProfileView, activate_employee, create_employee, edit_employee, employee_list, login, logout, suspend_employee
 
 urlpatterns = [
     path('accounts/login/', login, name='login'),
+    path('logout/', logout, name='logout'),
+    path('profile/', UserProfileView.as_view(), name='user_profile'),
     path('', DashboardView.as_view(), name='dashboard'),
 
     # URLs for managing Suppliers

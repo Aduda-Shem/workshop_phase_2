@@ -4,7 +4,6 @@
 {% block content %}
 <main>
     <div class="container-fluid site-width">
-        <!-- START: Breadcrumbs -->
         <div class="row">
             <div class="col-12  align-self-center">
                 <div class="sub-header mt-3 py-3 align-self-center d-sm-flex w-100 rounded">
@@ -20,15 +19,15 @@
                 </div>
             </div>
         </div>
-        <!-- END: Breadcrumbs -->
 
-        <!-- START: Card Data -->
         <div class="row">
             <div class="col-12 mt-3">
                 <div class="card">
                     <div class="card-header justify-content-between align-items-center">
                         <h4 class="card-title">Category List</h4>
-                        <button type="button" class="btn btn-success btn-sm float-right" data-toggle="modal" data-target="#addCategoryModal">Add Category</button>
+                        <button type="button" class="btn btn-success btn-sm float-right" data-toggle="modal" data-target="#addCategoryModal">
+                            <i class="fas fa-plus"></i> Add Category
+                        </button>
                     </div>
                     <div class="card-body">
                         {% if messages %}
@@ -59,7 +58,7 @@
                                         <td>
                                             <div class="d-flex justify-content-between">
                                                 <button type="button" class="btn btn-primary btn-sm edit-button" data-toggle="modal" data-target="#editCategoryModal{{ category.id }}">
-                                                    <i class="fas fa-edit"></i> 
+                                                    <i class="fas fa-edit"></i>
                                                 </button>
                                                 
                                                 <form method="post" action="{% url 'delete_category' category.id %}">
@@ -72,7 +71,7 @@
                                         </td>
                                         <td>
                                             <a href="{% url 'subcategory_category' category.id %}" class="btn btn-info btn-sm">
-                                                <i class="fas fa-eye"></i> <!-- View Icon -->
+                                                <i class="fas fa-eye"></i>
                                             </a>
                                         </td>
                                     </tr>
@@ -93,11 +92,9 @@
                 </div>
             </div>
         </div>
-        <!-- END: Card DATA -->
     </div>
 </main>
 
-<!-- Add Category Modal -->
 <div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -123,8 +120,7 @@
                         <input type="file" class="form-control-file" id="image" name="image" required>
                     </div>
                     <button type="submit" class="btn btn-success btn-block">
-                        <i class="fas fa-plus"></i> <!-- Add Icon -->
-                        Add Category
+                        <i class="fas fa-plus"></i> Add Category
                     </button>
                 </form>
             </div>
@@ -132,7 +128,6 @@
     </div>
 </div>
 
-<!-- Edit Category Modals -->
 {% for category in categories %}
 <div class="modal fade" id="editCategoryModal{{ category.id }}" tabindex="-1" role="dialog" aria-labelledby="editCategoryModalLabel{{ category.id }}" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -155,8 +150,7 @@
                         <textarea class="form-control" id="editDescription{{ category.id }}" name="description" required>{{ category.description }}</textarea>
                     </div>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-check"></i> 
-                        Save Changes
+                        <i class="fas fa-check"></i> Save Changes
                     </button>
                 </form>
             </div>
