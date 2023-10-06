@@ -26,3 +26,4 @@ class EmployeeForm(forms.Form):
     phone_number = forms.CharField(max_length=100, required=True)
     national_id = forms.CharField(max_length=8, required=True)
     salary = forms.DecimalField(max_digits=10, decimal_places=2, required=True)
+

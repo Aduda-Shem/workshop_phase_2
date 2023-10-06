@@ -57,6 +57,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'method_override.middleware.MethodOverrideMiddleware',
+
 ]
 
 AUTH_USER_MODEL = 'users.User'

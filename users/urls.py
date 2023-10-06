@@ -2,7 +2,7 @@ from django.urls import path
 from django.db.models import Sum
 
 from ecommerce.views import CategoryView, ProductView, SubcategoryView, best_selling_product_report, complete_sale, employee_performance_report, get_subcategories, pos_view, stock_report
-from .views import  DashboardView, SupplierEditView, SupplierListView, create_employee, employee_list, login
+from .views import  DashboardView, SupplierDeleteView, SupplierEditView, SupplierListView, activate_employee, create_employee, edit_employee, employee_list, login, suspend_employee
 
 urlpatterns = [
     path('accounts/login/', login, name='login'),
@@ -10,11 +10,17 @@ urlpatterns = [
 
     # URLs for managing Suppliers
     path('suppliers/', SupplierListView.as_view(), name='supplier_list'),
-    path('suppliers/edt/<int:supplier_id>/', SupplierEditView.as_view(), name='supplier_edit'),
-
+    path('suppliers/add/', SupplierListView.as_view(), name='supplier_add'),
+    path('suppliers/edit/<int:pk>/', SupplierListView.as_view(), name='supplier_edit'),
+    path('suppliers/delete/<int:pk>/', SupplierDeleteView, name='supplier_delete_ajax'),
+    
     # URLs for managing Employee
     path('create_employee/', create_employee, name='create_employee'),
     path('employee_list/', employee_list, name='employee_list'),
+    path('suspend_employee/<str:employee_id>/', suspend_employee, name='suspend_employee'),
+    path('activate_employee/<str:employee_id>/', activate_employee, name='activate_employee'),
+    path('edit_employee/<str:employee_id>/', edit_employee, name='edit_employee'),
+
 
     # URLs for managing categories
     path('categories/', CategoryView.as_view(), name='category_list'),

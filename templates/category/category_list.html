@@ -58,17 +58,21 @@
                                         <td><img src="{{ category.image.url }}" alt="{{ category.name }}" width="50"></td>
                                         <td>
                                             <div class="d-flex justify-content-between">
-                                                <button type="button" class="btn btn-primary btn-sm edit-button" data-toggle="modal" data-target="#editCategoryModal{{ category.id }}">Edit</button>
+                                                <button type="button" class="btn btn-primary btn-sm edit-button" data-toggle="modal" data-target="#editCategoryModal{{ category.id }}">
+                                                    <i class="fas fa-edit"></i> 
+                                                </button>
                                                 
                                                 <form method="post" action="{% url 'delete_category' category.id %}">
                                                     {% csrf_token %}
-                                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                                    <button type="submit" class="btn btn-danger btn-sm">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
                                                 </form>
                                             </div>
                                         </td>
                                         <td>
                                             <a href="{% url 'subcategory_category' category.id %}" class="btn btn-info btn-sm">
-                                                <i class="fas fa-eye"></i>
+                                                <i class="fas fa-eye"></i> <!-- View Icon -->
                                             </a>
                                         </td>
                                     </tr>
@@ -118,7 +122,10 @@
                         <label for="image">Image</label>
                         <input type="file" class="form-control-file" id="image" name="image" required>
                     </div>
-                    <button type="submit" class="btn btn-success btn-block">Add Category</button>
+                    <button type="submit" class="btn btn-success btn-block">
+                        <i class="fas fa-plus"></i> <!-- Add Icon -->
+                        Add Category
+                    </button>
                 </form>
             </div>
         </div>
@@ -147,7 +154,10 @@
                         <label for="editDescription{{ category.id }}">Description</label>
                         <textarea class="form-control" id="editDescription{{ category.id }}" name="description" required>{{ category.description }}</textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check"></i> 
+                        Save Changes
+                    </button>
                 </form>
             </div>
         </div>
@@ -157,13 +167,11 @@
 
 <script src="{% static 'jquery.min.js' %}"></script>
 <script>
-    // JavaScript to show success messages
     $(document).ready(function () {
         setTimeout(function () {
             $(".alert-success").fadeOut("slow");
         }, 3000);
         
-        // JavaScript to trigger modal on Edit button click
         $(".edit-button").click(function() {
             let targetModal = $($(this).data("target"));
             targetModal.modal("show");

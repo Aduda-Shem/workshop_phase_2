@@ -27,7 +27,9 @@
                 <div class="card">
                     <div class="card-header justify-content-between align-items-center">
                         <h4 class="card-title">Subcategory List</h4>
-                        <a href="{% url 'add_subcategory' category_id=category.id %}" class="btn btn-success btn-sm float-right" data-toggle="modal" data-target="#addSubcategoryModal">Add Subcategory</a>
+                        <a href="{% url 'add_subcategory' category_id=category.id %}" class="btn btn-success btn-sm float-right" data-toggle="modal" data-target="#addSubcategoryModal">
+                            <i class="fas fa-plus"></i> Add Subcategory <!-- Add Icon -->
+                        </a>
                     </div>
                     <div class="card-body">
                         {% if messages %}
@@ -73,13 +75,17 @@
                                             <td><img src="{{ subcategory.image.url }}" alt="{{ subcategory.name }}" width="50"></td>
                                             <td>
                                                 <div class="btn-group">
-                                                    <a href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editSubcategoryModal{{ subcategory.id }}">Edit</a>
+                                                    <button type="button" class="btn btn-primary btn-sm edit-button" data-toggle="modal" data-target="#editSubcategoryModal{{ subcategory.id }}">
+                                                        <i class="fas fa-edit"></i> 
+                                                    </a>
                                                     <form method="post" action="{% url 'delete_subcategory' category_id=category.id subcategory_id=subcategory.id %}">
                                                         {% csrf_token %}
-                                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                                        <button type="submit" class="btn btn-danger btn-sm">
+                                                            <i class="fas fa-trash-alt"></i> 
+                                                        </button>
                                                     </form>
                                                 </div>
-                                            </td>                                                                                      
+                                            </td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
@@ -128,7 +134,7 @@
                         <input type="file" class="form-control-file" id="image" name="image" required>
                     </div>
                     <button type="submit" class="btn btn-success btn-block">Add Subcategory</button>
-                </form>  
+                </form>
             </div>
         </div>
     </div>

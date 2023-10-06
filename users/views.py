@@ -1,4 +1,5 @@
 from datetime import date
+from django.views.generic import TemplateView
 import json
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -180,13 +181,14 @@ class DashboardView(View):
 
         return render(request, 'dashboard.html', context)
 @method_decorator(login_required, name='dispatch')
-class SupplierListView(View):
+class SupplierListView(TemplateView):
     template_name = 'suppliers/supplier_list.html'
 
-    def get(self, request):
-        suppliers = Supplier.objects.all()
-        form = SupplierForm()
-        return render(request, self.template_name, {'suppliers': suppliers, 'form': form})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['suppliers'] = Supplier.objects.all()
+        context['form'] = SupplierForm()
+        return context
 
     def post(self, request):
         data = request.POST
@@ -200,8 +202,8 @@ class SupplierListView(View):
             form.save()
             return redirect('supplier_list') 
         else:
-            suppliers = Supplier.objects.all()
-            return render(request, self.template_name, {'suppliers': suppliers, 'form': form})
+            context = self.get_context_data()
+            return self.render_to_response(context)
 
     def put(self, request, pk):
         supplier = get_object_or_404(Supplier, pk=pk)
@@ -211,7 +213,9 @@ class SupplierListView(View):
             form.save()
             return redirect('supplier_list') 
         else:
-            return render(request, self.template_name, {'form': form})
+            context = self.get_context_data()
+            context['form'] = form
+            return self.render_to_response(context)
 
     def delete(self, request, pk):
         supplier = get_object_or_404(Supplier, pk=pk)
@@ -220,6 +224,13 @@ class SupplierListView(View):
 
     def get_success_url(self):
         return reverse('supplier_list')
+
+@login_required
+class SupplierDeleteView(View):
+    def delete(self, request, pk):
+        supplier = get_object_or_404(Supplier, pk=pk)
+        supplier.delete()
+        return JsonResponse({'message': 'Supplier deleted successfully'})
 
 class SupplierEditView(LoginRequiredMixin, View):
     template_name = 'suppliers/supplier_list.html'
@@ -261,9 +272,9 @@ def create_employee(request):
             user = User(
                 email=employee_form.cleaned_data['email'],
                 username=username,
-                password=password,  
                 is_staff=True,
             )
+            user.set_password(password)
             user.save()
 
             employee = Employee(
@@ -316,7 +327,38 @@ def generate_unique_username(email):
 def employee_list(request):
     employees = Employee.objects.all()  
     print("employees",employees)
-    return render(request, 'users/add_employee.html', {'employees': employees})
+    return render(request, 'users/view_employee.html', {'employees': employees})
+
+@login_required
+def suspend_employee(request, employee_id):
+    employee = get_object_or_404(Employee, employee_id=employee_id)
+    if employee.user.is_active:
+        employee.user.is_active = False
+        employee.user.save()
+        messages.success(request, f'Suspended {employee.first_name} {employee.last_name}.')
+    return redirect('employee_list')
+
+@login_required
+def activate_employee(request, employee_id):
+    employee = get_object_or_404(Employee, employee_id=employee_id)
+    if not employee.user.is_active:
+        employee.user.is_active = True
+        employee.user.save()
+        messages.success(request, f'Activated {employee.first_name} {employee.last_name}.')
+    return redirect('employee_list')
 
 
+@login_required
+def edit_employee(request, employee_id):
+    employee = get_object_or_404(Employee, employee_id=employee_id)
 
+    if request.method == 'POST':
+        form = EmployeeForm(request.POST, instance=employee)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Employee details updated successfully.')
+            return redirect('employee_list')
+    else:
+        form = EmployeeForm(instance=employee)
+
+    return render(request, 'edit_employee.html', {'form': form, 'employee': employee})

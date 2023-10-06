@@ -81,6 +81,49 @@
     <!-- END: Header -->
 
     <!-- START: Main Menu -->
+    {% if request.user.is_staff %}
+    <div class="sidebar">
+        <div class="site-width">
+            <ul id="side-menu" class="sidebar-menu">
+                <li class="dropdown"><a href="{% url 'dashboard' %}"><i class="fas fa-home mr-1 text-xl"></i>
+                        Dashboard</a>
+                    <ul>
+                        <li><a href="{% url 'dashboard' %}"><i class="fas fa-th text-xl"></i> Dashboard</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown"><a href="#"><i class="fas fa-cogs mr-1 text-xl"></i> Workshop</a>
+                    <ul>
+                        <li><a href="{% url 'category_list' %}"><i class="fas fa-th-list text-xl"></i> Category</a></li>
+                        <li><a href="{% url 'product_list' %}"><i class="fas fa-list text-xl"></i> Items</a></li>
+                        <li><a href="{% url 'pos_view' %}"><i class="fas fa-credit-card text-xl"></i> Sales</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown"><a href="#"><i class="fas fa-users mr-1 text-xl"></i> Suppliers</a>
+                    <ul>
+                        <li><a href="{% url 'supplier_list' %}"><i class="fas fa-user-plus text-xl"></i> Add Supplier</a></li>
+                        <li><a href="{% url 'supplier_list' %}"><i class="fas fa-users text-xl"></i> View Suppliers</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a href="#"><i class="fas fa-chart-bar mr-1 text-xl"></i> Reports</a>
+                    <ul>
+                        <li><a href="{% url 'stock_report' %}"><i class="fas fa-box text-xl"></i> Stock Report</a></li>
+                        <li><a href="{% url 'best_selling_product_report' %}"><i class="fas fa-chart-line text-xl"></i> Best Selling Product Report</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ol class="breadcrumb bg-transparent align-self-center m-0 p-0 ml-auto">
+                <li class="breadcrumb-item"><a href="#">Application</a></li>
+                <li class="breadcrumb-item active">Notes</li>
+            </ol>
+        </div>
+    </div>
+    <!-- END: Main Menu -->
+{% else %}
+    <!-- START: Main Menu (for non-staff users) -->
     <div class="sidebar">
         <div class="site-width">
             <!-- START: Menu -->
@@ -100,12 +143,14 @@
                     </ul>
                 </li>
 
-                <li class="dropdown"><a href="#"><i class="fas fa-users mr-1 text-xl"></i> Employees</a>
+                <li class="dropdown">
+                    <a href="#"><i class="fas fa-users mr-1 text-xl"></i> Employees</a>
                     <ul>
-                        <li><a href="{% url 'create_employee' %}"><i class="fas fa-user-plus text-xl"></i> View Employee</a>
-                        </li>
+                        <li><a href="{% url 'create_employee' %}"><i class="fas fa-user-plus text-xl"></i> Add Employee</a></li>
+                        <li><a href="{% url 'employee_list' %}"><i class="fas fa-users text-xl"></i> View Employees</a></li>
                     </ul>
                 </li>
+                
 
                 <li class="dropdown"><a href="#"><i class="fas fa-users mr-1 text-xl"></i> Suppliers</a>
                     <ul>
@@ -131,7 +176,8 @@
             </ol>
         </div>
     </div>
-    <!-- END: Main Menu -->
+{% endif %}
+
 </body>
 
 </html>

@@ -21,54 +21,62 @@
                 </div>
             </div>
         </div>
-                <!-- START: Card Data-->
-                <div class="row">
-                    {% for item in items %}
-                    <div class="col-12 col-md-6 mt-3">
-                        <div class="card">
-                            <div class="card-header  justify-content-between align-items-center">                               
-                                <h4 class="card-title">Details</h4> 
-                            </div>
-                            <div class="card-body">
-                                <dl class="row mb-0 redial-line-height-2_5">
-                                    <dt class="col-sm-5">Item Name:</dt>
-                                    <dd class="col-sm-7">{{subcategory.name}}</dd>
+        <!-- END: Breadcrumbs -->
 
-                                    <dt class="col-sm-5">Description:</dt>
-                                    <dd class="col-sm-7">{{subcategory.description}}</dd>
+        <!-- START: Card Data -->
+        <div class="row">
+            {% for item in items %}
+            <div class="col-12 col-md-6 mt-3">
+                <div class="card">
+                    <div class="card-header justify-content-between align-items-center">
+                        <h4 class="card-title">Item Details</h4>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-5">Item Name:</dt>
+                            <dd class="col-sm-7">{{ item.name }}</dd>
 
-                                    <dt class="col-sm-5">Price:</dt>
-                                    <dd class="col-sm-7">{{subcategory.price}}</dd>
+                            <dt class="col-sm-5">Description:</dt>
+                            <dd class="col-sm-7">{{ item.description }}</dd>
 
-                                    <dt class="col-sm-5">Quantity:</dt>
-                                    <dd class="col-sm-7">{{subcategory.quantity}}</dd>
-                                </dl>
-                            </div>
+                            <dt class="col-sm-5">Price:</dt>
+                            <dd class="col-sm-7">${{ item.price }}</dd>
+
+                            <dt class="col-sm-5">Quantity:</dt>
+                            <dd class="col-sm-7">{{ item.quantity }}</dd>
+                        </dl>
+                    </div>
+                    <div class="card-footer">
+                        <div class="text-right">
+                            <a href="{% url 'update_item' item_id=item.id %}" class="btn btn-link" title="Edit Item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                    <path d="M11.293 0.293a1 1 0 0 1 1.414 0l3 3a1 1 0 0 1 0 1.414l-10 10a1 1 0 0 1-1.414 0l-3-3a1 1 0 0 1 0-1.414l10-10a1 1 0 0 1 0-1.414z"/>
+                                    <path fill-rule="evenodd" d="M11.293 2.293l-10 10L1 14l1-1 10-10-1-1-2.293 2.293a1 1 0 0 1-1.414 0z"/>
+                                    <path fill-rule="evenodd" d="M4 11h.586L12 3.586V3a1 1 0 0 1 1-1h.001a1 1 0 0 1 1 1v.001a1 1 0 0 1-1 1h-.586L4 10.414V11z"/>
+                                </svg>
+                            </a>
+                            <a href="{% url 'view_item' item_id=item.id %}" class="btn btn-link" title="View Item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                    <path d="M0 8s4-4 8-4s8 4 8 4s-4 4-8 4s-8-4-8-4zm8 3a3 3 0 100-6a3 3 0 000 6z"/>
+                                    <path d="M0 8s4 1 8 1s8-1 8-1s-4-1-8-1s-8 1-8 1z"/>
+                                </svg>
+                            </a>
+                            <form action="{% url 'delete_item' item_id=item.id %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-link" title="Delete Item">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                        <path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5V5h-1a2 2 0 0 1-2-2H9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2H3a2 2 0 0 1-2 2H0v-.5a.5.5 0 0 1 .5-.5h1V4zm9-1a1 1 0 0 0-1-1H6a1 1 0 0 0-1 1H2.5a.5.5 0 0 1-.5-.5V3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v-.5a.5.5 0 0 1-.5.5H11z"/>
+                                        <path fill-rule="evenodd" d="M5.293 6.293a1 1 0 0 1 1.414 0L8 7.586l1.293-1.293a1 1 0 1 1 1.414 1.414L9.414 9l1.293 1.293a1 1 0 0 1-1.414 1.414L8 10.414l-1.293 1.293a1 1 0 0 1-1.414-1.414L6.586 9 5.293 7.707a1 1 0 0 1 0-1.414z"/>
+                                    </svg>
+                                </button>
+                            </form>
                         </div>
                     </div>
-                    {% endfor %}
+                </div>
             </div>
-        </main>
-
-        <script src="{%static '/vendors/datatable/js/jquery.dataTables.min.js'%}"></script> 
-        <script src="{%static '/vendors/datatable/js/dataTables.bootstrap4.min.js'%}"></script>
-        <script src="{%static '/vendors/datatable/jszip/jszip.min.js' %}"></script>
-        <script src="{%static '/vendors/datatable/pdfmake/pdfmake.min.js' %}"></script>
-        <script src="{%static '/vendors/datatable/pdfmake/vfs_fonts.js' %}"></script>
-        <script src="{%static '/vendors/datatable/buttons/js/dataTables.buttons.min.js' %}"></script>
-        <script src="{%static '/vendors/datatable/buttons/js/buttons.bootstrap4.min.js' %}"></script>
-        <script src="{%static '/vendors/datatable/buttons/js/buttons.colVis.min.js' %}"></script>
-        <script src="{%static '/vendors/datatable/buttons/js/buttons.flash.min.js' %}"></script>
-        <script src="{%static '/vendors/datatable/buttons/js/buttons.html5.min.js' %}"></script>
-        <script src="{%static '/vendors/datatable/buttons/js/buttons.print.min.js' %}"></script>
-        <!-- END: Page Vendor JS-->
-    
-        <!-- START: Page Script JS-->        
-        <script src="{%static '/js/datatable.script.js' $}"></script>
-    
-        <!-- END: Content-->
-
-
-
-
+            {% endfor %}
+        </div>
+        <!-- END: Card Data -->
+    </div>
+</main>
 {% endblock %}
