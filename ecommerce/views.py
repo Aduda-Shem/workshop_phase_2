@@ -267,15 +267,28 @@ def stock_report(request):
         'data': products,  
         'report_title': report_title,
     }
-    return render(request, 'reporting/reports.html', context)
+    return render(request, 'reporting/stock_report.html', context)
 
 @login_required
 def best_selling_product_report(request):
-    best_selling_product = SaleRecord.objects.values('product__name').annotate(total_quantity_sold=Sum('quantity_sold')).order_by('-total_quantity_sold').first()
+    best_selling_products = SaleRecord.objects.values('product__name').annotate(total_quantity_sold=Sum('quantity_sold')).order_by('-total_quantity_sold')
     report_title = "Best Selling Product Report"
     
     context = {
-        'data': best_selling_product,  
+        'data': best_selling_products,  
         'report_title': report_title,
     }
-    return render(request, 'reporting/reports.html', context)
+    print(context)
+    return render(request, 'reporting/best_selling_report.html', context)
+
+@login_required
+def employee_performance_report(request):
+    employee_sales = SaleRecord.objects.values('point_of_sale__seller__id', 'point_of_sale__seller__first_name', 'point_of_sale__seller__last_name').annotate(total_quantity_sold=Sum('quantity_sold')).order_by('-total_quantity_sold')
+    
+    report_title = "Employee Performance Report"
+    
+    context = {
+        'data': employee_sales,  
+        'report_title': report_title,
+    }
+    return render(request, 'reporting/employee_performance_report.html', context)

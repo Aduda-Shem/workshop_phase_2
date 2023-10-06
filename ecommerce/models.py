@@ -2,7 +2,6 @@ from django.db import models
 from users.models import User
 from simple_history.models import HistoricalRecords
 
-
 class Category(models.Model):
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField()

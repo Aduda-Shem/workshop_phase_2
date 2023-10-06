@@ -1,7 +1,7 @@
 from django.urls import path
 from django.db.models import Sum
 
-from ecommerce.views import CategoryView, ProductView, SubcategoryView, best_selling_product_report, complete_sale, get_subcategories, pos_view, stock_report
+from ecommerce.views import CategoryView, ProductView, SubcategoryView, best_selling_product_report, complete_sale, employee_performance_report, get_subcategories, pos_view, stock_report
 from .views import  DashboardView, SupplierEditView, SupplierListView, create_employee, employee_list, login
 
 urlpatterns = [
@@ -45,4 +45,5 @@ urlpatterns = [
     # reporting
     path('stock-report/', stock_report, name='stock_report'),
     path('best-selling-product-report/', best_selling_product_report, name='best_selling_product_report'),
+    path('employee-performance/', employee_performance_report, name='employee_performance_report'),
 ]
