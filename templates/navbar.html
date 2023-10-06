@@ -113,6 +113,15 @@
                         <li><a href="{% url 'supplier_list' %}"><i class="fas fa-users text-xl"></i> View Suppliers</a></li>
                     </ul>
                 </li>
+
+                <li class="dropdown">
+                    <a href="#"><i class="fas fa-chart-bar mr-1 text-xl"></i> Reports</a>
+                    <ul>
+                        <li><a href="{% url 'stock_report' %}"><i class="fas fa-box text-xl"></i> Stock Report</a></li>
+                        <li><a href="{% url 'best_selling_product_report' %}"><i class="fas fa-chart-line text-xl"></i> Best Selling Product Report</a></li>
+                    </ul>
+                </li>
+                
             </ul>
             <!-- END: Menu -->
             <ol class="breadcrumb bg-transparent align-self-center m-0 p-0 ml-auto">

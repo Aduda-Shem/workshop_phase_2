@@ -38,6 +38,8 @@ from django.contrib.auth import get_user_model
 
 import random
 import string
+import decimal
+
 
 # Authentication Views
 def login(request):
@@ -67,64 +69,113 @@ def logout(request):
     return redirect('login')
 
 
-class DecimalEncoder(DjangoJSONEncoder):
+class DecimalEncoder(json.JSONEncoder):
     def default(self, o):
-        if isinstance(o, Decimal):
-            return str(o) 
-        return super().default(o)
-@method_decorator(login_required, name='dispatch')
+        if isinstance(o, decimal.Decimal):
+            return str(o)
+        return super(DecimalEncoder, self).default(o)
+
 class DashboardView(View):
     def get(self, request):
-        total_price_all_products = sum(product.price * product.stock_quantity for product in Product.objects.all())
+        is_staff = request.user.is_staff
+        
+        if is_staff:
+   
+            total_price_all_products = sum(product.price * product.stock_quantity for product in Product.objects.all())
+            employee_count = Employee.objects.count()
+            supplier_count = Supplier.objects.count()
+            today_sale = SaleRecord.objects.filter(point_of_sale__sale_datetime__date=date.today(), employee=request.user.employee).aggregate(total_sales=Sum('total_amount'))['total_sales'] or 0
 
-        employee_count = Employee.objects.count()
-        supplier_count = Supplier.objects.count()
+            today = date.today()
+            first_day_of_year = date(today.year, 1, 1)
+            
+            sales_data = SaleRecord.objects.filter(
+                point_of_sale__sale_datetime__date__gte=first_day_of_year,
+                employee=request.user.employee
+            ).values('point_of_sale__sale_datetime__month').annotate(total_sales=Sum('total_amount'))
+            
+            labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+            
+            sales_values = [0] * 12
+            
+            for sale in sales_data:
+                month_index = sale['point_of_sale__sale_datetime__month'] - 1
+                sales_values[month_index] = sale['total_sales']
+            
+            sales_chart_data = {
+                'labels': labels,
+                'datasets': [
+                    {
+                        'label': "Monthly Sales",
+                        'data': sales_values,
+                        'borderColor': "rgba(75, 192, 192, 1)",
+                        'borderWidth': 1,
+                        'fill': False,
+                    },
+                ],
+            }
+            
+            categories = Category.objects.all()
+            categories_with_total_stock = []
+            for category in categories:
+                products_in_category = Product.objects.filter(category=category)
+                total_stock = sum(product.stock_quantity for product in products_in_category)
+                total_price = sum(product.price * product.stock_quantity for product in products_in_category)
+                categories_with_total_stock.append({'id': category.id, 'total_stock': total_stock, 'total_price': total_price})
+            recent_sales = SaleRecord.objects.filter(employee=request.user.employee).order_by('-sale_datetime')[:5]
+        
+        else:
+            total_price_all_products = sum(product.price * product.stock_quantity for product in Product.objects.all())
+            employee_count = Employee.objects.count()
+            supplier_count = Supplier.objects.count()
+            today_sale = SaleRecord.objects.filter(point_of_sale__sale_datetime__date=date.today()).aggregate(total_sales=Sum('total_amount'))['total_sales'] or 0
 
-        today_sale = SaleRecord.objects.filter(point_of_sale__sale_datetime__date=date.today()).aggregate(total_sales=Sum('total_amount'))['total_sales'] or 0
-
-        today = date.today()
-        six_months_ago = today - timedelta(days=180)
-
-        sales_data = SaleRecord.objects.filter(point_of_sale__sale_datetime__date__gte=six_months_ago) \
-            .values('point_of_sale__sale_datetime__month') \
-            .annotate(total_sales=Sum('total_amount')) \
-            .order_by('point_of_sale__sale_datetime__month')
-
-        labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-        sales_values = [sales['total_sales'] if sales['total_sales'] else 0 for sales in sales_data]
-
-        sales_chart_data = {
-            'labels': labels,
-            'datasets': [
-                {
-                    'label': "Monthly Sales",
-                    'data': sales_values,
-                    'borderColor': "rgba(75, 192, 192, 1)",
-                    'borderWidth': 1,
-                    'fill': False,
-                },
-            ],
-        }
-
-
-        categories = Category.objects.all()
-        categories_with_total_stock = []
-        for category in categories:
-            products_in_category = Product.objects.filter(category=category)
-            total_stock = sum(product.stock_quantity for product in products_in_category)
-            total_price = sum(product.price * product.stock_quantity for product in products_in_category)
-            categories_with_total_stock.append({'id': category.id, 'total_stock': total_stock, 'total_price': total_price})
-
-        recent_sales = SaleRecord.objects.order_by('-sale_datetime')[:10]
-
+            today = date.today()
+            first_day_of_year = date(today.year, 1, 1)
+            
+            sales_data = SaleRecord.objects.filter(
+                point_of_sale__sale_datetime__date__gte=first_day_of_year
+            ).values('point_of_sale__sale_datetime__month').annotate(total_sales=Sum('total_amount'))
+            
+            labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+            
+            sales_values = [0] * 12
+            
+            for sale in sales_data:
+                month_index = sale['point_of_sale__sale_datetime__month'] - 1
+                sales_values[month_index] = sale['total_sales']
+            
+            sales_chart_data = {
+                'labels': labels,
+                'datasets': [
+                    {
+                        'label': "Monthly Sales",
+                        'data': sales_values,
+                        'borderColor': "rgba(75, 192, 192, 1)",
+                        'borderWidth': 1,
+                        'fill': False,
+                    },
+                ],
+            }
+            
+            categories = Category.objects.all()
+            categories_with_total_stock = []
+            for category in categories:
+                products_in_category = Product.objects.filter(category=category)
+                total_stock = sum(product.stock_quantity for product in products_in_category)
+                total_price = sum(product.price * product.stock_quantity for product in products_in_category)
+                categories_with_total_stock.append({'id': category.id, 'total_stock': total_stock, 'total_price': total_price})
+            recent_sales = SaleRecord.objects.order_by('-sale_datetime')[:5]
+        
         context = {
-            'total_price_all_products': total_price_all_products,  
+            'total_price_all_products': total_price_all_products,
             'today_sale': today_sale,
             'supplier': supplier_count,
+            'employee_count': employee_count,
             'categories': categories,
             'categories_with_total_stock': categories_with_total_stock,
             'recent_sales': recent_sales,
-            'sales_chart_data': json.dumps(sales_chart_data, cls=DecimalEncoder),  
+            'sales_chart_data': json.dumps(sales_chart_data, cls=DecimalEncoder),  # Remove '@' symbol
         }
 
         return render(request, 'dashboard.html', context)

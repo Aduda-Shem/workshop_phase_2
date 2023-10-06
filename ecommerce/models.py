@@ -3,7 +3,6 @@ from users.models import User
 from simple_history.models import HistoricalRecords
 
 
-# Create your models here.
 class Category(models.Model):
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField()
@@ -21,7 +20,6 @@ class Subcategory(models.Model):
     def __str__(self):
         return self.name
 
-
 class Product(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
@@ -36,8 +34,23 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+    def calculate_stock_in(self):
+        sale_records = SaleRecord.objects.filter(product=self)
+        stock_in = sum(record.quantity_sold for record in sale_records)
+        return stock_in
 
-# Sales made 
+    def calculate_stock_out(self):
+        sale_records = SaleRecord.objects.filter(product=self)
+        stock_out = sum(record.quantity_sold for record in sale_records)
+        return stock_out
+
+    @property
+    def total_stock_quantity(self):
+        stock_in = self.calculate_stock_in()
+        stock_out = self.calculate_stock_out()
+        total_stock = stock_in - stock_out
+        return total_stock
+
 class PointOfSale(models.Model):
     seller = models.ForeignKey(User, on_delete=models.CASCADE)
     sale_datetime = models.DateTimeField(auto_now_add=True)
@@ -56,4 +69,3 @@ class SaleRecord(models.Model):
 
     def __str__(self):
         return f"SaleRecord-{self.id}"
-

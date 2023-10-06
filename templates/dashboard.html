@@ -45,7 +45,7 @@
                             <div class='d-flex px-0 px-lg-2 py-2 align-self-center'>
                                 <i class="icon-people icons card-liner-icon mt-2"></i>
                                 <div class='card-liner-content'>
-                                    <h2 class="card-liner-title">{{ employee }}</h2>
+                                    <h2 class="card-liner-title">{{ employee_count }}</h2>
                                     <h6 class="card-liner-subtitle">Employees</h6>
                                 </div>
                             </div>
@@ -88,7 +88,7 @@
                 <div class="col-12 col-md-6 col-lg-4 mt-3">
                     <div class="card">
                         <div class="card-content">
-                            <div class="card-body">
+                            <div class="card-body" style="max-height: 350px; overflow-y: auto;">
                                 <div class="table-responsive">
                                     <table class="table table-bordered mb-0">
                                         <thead>
@@ -125,15 +125,15 @@
                         </div>
                     </div>
                 </div>
-
+                
                 <!-- Display information about recent sales -->
                 <div class="col-12 col-md-6 col-lg-8 mt-3">
                     <div class="card">
-                        <div class="card-header  justify-content-between align-items-center">
+                        <div class="card-header justify-content-between align-items-center">
                             <h6 class="card-title">Recent Sales</h6>
                         </div>
-                        <div class="card-body table-responsive p-0">
-                            <table class="table  mb-0">
+                        <div class="card-body table-responsive p-0" style="max-height: 350px; overflow-y: auto;">
+                            <table class="table mb-0">
                                 <thead>
                                     <tr>
                                         <th>ID</th>
@@ -148,11 +148,11 @@
                                     {% for sale_record in recent_sales %}
                                     <tr>
                                         <td>{{ sale_record.id }}</td>
-                                        <td>{{ sale_record.product.name }}</td> 
-                                        <td>{{ sale_record.point_of_sale.employee.name }}</td>
+                                        <td>{{ sale_record.product.name }}</td>
+                                        <td>{{ sale_record.point_of_sale.seller.first_name }} {{ sale_record.point_of_sale.seller.last_name }}</td>
                                         <td>{{ sale_record.quantity_sold }}</td>
                                         <td>KES {{ sale_record.total_amount }}</td>
-                                        <td>{{ sale_record.sale_datetime }}</td> 
+                                        <td>{{ sale_record.sale_datetime }}</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -160,6 +160,7 @@
                         </div>
                     </div>
                 </div>
+                
 
                 <div class="col-12 mt-4">
                     <div class="card">

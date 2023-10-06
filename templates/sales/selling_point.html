@@ -21,7 +21,7 @@
                                 <select class="form-control" id="product_name" name="product_name">
                                     <option value="">Select a product</option>
                                     {% for product in products %}
-                                    <option value="{{ product.id }}" data-price="{{ product.price }}">{{ product.name }} - ${{ product.price }}</option>
+                                    <option value="{{ product.id }}" data-price="{{ product.price }}">{{ product.name }} - KES {{ product.price }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -54,11 +54,11 @@
                                     {% for item in cart %}
                                     <tr data-id="{{ item.product.id }}">
                                         <td>{{ item.product.name }}</td>
-                                        <td>${{ item.product.price }}</td>
+                                        <td>KES {{ item.product.price }}</td>
                                         <td>
                                             <input type="number" class="form-control quantity-input" value="{{ item.quantity }}" min="1" required>
                                         </td>
-                                        <td class="total-cell">${{ item.total }}</td>
+                                        <td class="total-cell">KES {{ item.total }}</td>
                                         <td>
                                             <button class="btn btn-danger btn-sm remove-item">Remove</button>
                                         </td>
@@ -67,7 +67,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <p>Total: $<span id="cart-total">{{ total }}</span></p>
+                        <p>Total: KES <span id="cart-total">{{ total }}</span></p>
                         <button class="btn btn-success btn-block" id="make-sale-button">Make Sale</button>
                     </div>
                 </div>
@@ -130,14 +130,14 @@
                     var newQuantity = currentQuantity + quantity;
                     row.find(".quantity-input").val(newQuantity);
                     var newTotal = newQuantity * productPrice;
-                    row.find(".total-cell").text("$" + newTotal.toFixed(2));
+                    row.find(".total-cell").text("KES " + newTotal.toFixed(2));
                 } else {
                     // Product is not in cart, add a new row
                     var newRow = $("<tr data-id='" + productId + "'>");
                     newRow.html("<td>" + productName + "</td>" +
-                        "<td>$" + productPrice.toFixed(2) + "</td>" +
+                        "<td>KES " + productPrice.toFixed(2) + "</td>" +
                         "<td><input type='number' class='form-control quantity-input' value='" + quantity + "' min='1' required></td>" +
-                        "<td class='total-cell'>$" + (quantity * productPrice).toFixed(2) + "</td>" +
+                        "<td class='total-cell'>KES " + (quantity * productPrice).toFixed(2) + "</td>" +
                         "<td><button class='btn btn-danger btn-sm remove-item'>Remove</button></td>");
                     $("#cart-table-body").append(newRow);
                 }
@@ -157,12 +157,12 @@
             var total = 0;
             $("#cart-table-body tr").each(function () {
                 var quantity = parseInt($(this).find(".quantity-input").val());
-                var price = parseFloat($(this).find("td:nth-child(2)").text().replace("$", ""));
+                var price = parseFloat($(this).find("td:nth-child(2)").text().replace("KES ", ""));
                 var itemTotal = quantity * price;
                 total += itemTotal;
-                $(this).find(".total-cell").text("$" + itemTotal.toFixed(2));
+                $(this).find(".total-cell").text("KES " + itemTotal.toFixed(2));
             });
-            $("#cart-total").text(total.toFixed(2));
+            $("#cart-total").text("KES " + total.toFixed(2));
         }
 
         $("#make-sale-button").click(function () {
@@ -198,7 +198,7 @@
                         
                         // Clear the cart and update the UI
                         $("#cart-table-body").empty();
-                        $("#cart-total").text("0.00");
+                        $("#cart-total").text("KES 0.00");
 
                         // Hide the modal after a delay (e.g., 2 seconds)
                         setTimeout(function() {
@@ -214,9 +214,25 @@
     });
 </script>
 
+<script src="{%static '/vendors/datatable/js/jquery.dataTables.min.js'%}"></script> 
+<script src="{%static '/vendors/datatable/js/dataTables.bootstrap4.min.js'%}"></script>
+<script src="{%static '/vendors/datatable/jszip/jszip.min.js' %}"></script>
+<script src="{%static '/vendors/datatable/pdfmake/pdfmake.min.js' %}"></script>
+<script src="{%static '/vendors/datatable/pdfmake/vfs_fonts.js' %}"></script>
+<script src="{%static '/vendors/datatable/buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{%static '/vendors/datatable/buttons/js/buttons.bootstrap4.min.js' %}"></script>
+<script src="{%static '/vendors/datatable/buttons/js/buttons.colVis.min.js' %}"></script>
+<script src="{%static '/vendors/datatable/buttons/js/buttons.flash.min.js' %}"></script>
+<script src="{%static '/vendors/datatable/buttons/js/buttons.html5.min.js' %}"></script>
+<script src="{%static '/vendors/datatable/buttons/js/buttons.print.min.js' %}"></script>
+<!-- END: Page Vendor JS-->
+
+<!-- START: Page Script JS-->        
+<script src="{%static '/js/datatable.script.js' $}"></script>
+
 
 <style>
-
+/* Your custom CSS styles can go here */
 .main {
     padding: 20px;
 }
@@ -261,7 +277,6 @@
     font-size: 18px;
     color: #333;
 }
-
 </style>
 
 {% endblock %}

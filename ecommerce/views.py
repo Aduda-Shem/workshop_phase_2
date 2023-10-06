@@ -8,6 +8,8 @@ from .models import Category, PointOfSale, Product, SaleRecord, Subcategory
 from .forms import CategoryForm, ProductForm, ProductNameForm, ProductSelectionForm, SubcategoryForm
 from django.db import transaction
 
+from django.contrib.auth.decorators import login_required
+
 class CategoryView(View):
     template_name = 'category/category_list.html'
 
@@ -245,7 +247,35 @@ def complete_sale(request):
                             return JsonResponse({'success': False, 'error_message': 'Insufficient stock'})
 
                 return JsonResponse({'success': True})
+
             except Exception as e:
                 return JsonResponse({'success': False, 'error_message': str(e)})
 
     return JsonResponse({'success': False, 'error_message': 'Invalid request'})
+
+
+
+
+
+# REPORTING
+@login_required
+def stock_report(request):
+    products = Product.objects.all()
+    report_title = "Stock Report"
+    
+    context = {
+        'data': products,  
+        'report_title': report_title,
+    }
+    return render(request, 'reporting/reports.html', context)
+
+@login_required
+def best_selling_product_report(request):
+    best_selling_product = SaleRecord.objects.values('product__name').annotate(total_quantity_sold=Sum('quantity_sold')).order_by('-total_quantity_sold').first()
+    report_title = "Best Selling Product Report"
+    
+    context = {
+        'data': best_selling_product,  
+        'report_title': report_title,
+    }
+    return render(request, 'reporting/reports.html', context)
