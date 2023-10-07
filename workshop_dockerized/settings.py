@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'simple_history',
     'ecommerce',
     'django_select2',
+    'chartjs',
 
 ]
 

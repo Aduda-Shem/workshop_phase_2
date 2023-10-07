@@ -6,7 +6,7 @@
     <div class="container-fluid site-width">
         <div class="row">
             <div class="col-12 align-self-center">
-                <h2>Point of Sale (POS)</h2>
+                <h2>Welcome to our Point of Sale (POS)</h2>
             </div>
         </div>
 
@@ -17,11 +17,11 @@
                         <form method="post" id="add-to-cart-form">
                             {% csrf_token %}
                             <div class="form-group">
-                                <label for="product_name">Select Product:</label>
+                                <label for="product_name">Select a Product:</label>
                                 <select class="form-control" id="product_name" name="product_name">
                                     <option value="">Select a product</option>
                                     {% for product in products %}
-                                    <option value="{{ product.id }}" data-price="{{ product.price }}">{{ product.name }} - KES {{ product.price }}</option>
+                                    <option value="{{ product.id }}" data-price="{{ product.price }}" data-image="{{ product.image.url }}">{{ product.name }} - KES {{ product.price }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -38,12 +38,12 @@
             <div class="col-6">
                 <div class="card">
                     <div class="card-body">
-                        <h4>Shopping Cart</h4>
+                        <h4>Your Shopping Cart</h4>
                         <div class="table-responsive">
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
+                                        <th>Product</th>
                                         <th>Price</th>
                                         <th>Quantity</th>
                                         <th>Total</th>
@@ -53,7 +53,12 @@
                                 <tbody id="cart-table-body">
                                     {% for item in cart %}
                                     <tr data-id="{{ item.product.id }}">
-                                        <td>{{ item.product.name }}</td>
+                                        <td>
+                                            <div class="product-info">
+                                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="50">
+                                                <p>{{ item.product.name }}</p>
+                                            </div>
+                                        </td>
                                         <td>KES {{ item.product.price }}</td>
                                         <td>
                                             <input type="number" class="form-control quantity-input" value="{{ item.quantity }}" min="1" required>
@@ -68,7 +73,7 @@
                             </table>
                         </div>
                         <p>Total: KES <span id="cart-total">{{ total }}</span></p>
-                        <button class="btn btn-success btn-block" id="make-sale-button">Make Sale</button>
+                        <button class="btn btn-success btn-block" id="make-sale-button">Complete Sale</button>
                     </div>
                 </div>
             </div>
@@ -81,13 +86,13 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="successModalLabel">Success</h5>
+                <h5 class="modal-title" id="successModalLabel">Sale Completed!</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                Sale completed!
+                Thank you for shopping with us!
             </div>
         </div>
     </div>
@@ -98,13 +103,13 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="errorModalLabel">Error</h5>
+                <h5 class="modal-title" id="errorModalLabel">Sale Failed</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                Sale failed. Please try again.
+                <p id="error-message">Oops! Something went wrong. Please try again.</p>
             </div>
         </div>
     </div>
@@ -114,27 +119,25 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
     $(document).ready(function () {
-        // Add to cart form submission
         $("#add-to-cart-form").submit(function (e) {
             e.preventDefault();
             var productId = $("#product_name").val();
             var quantity = parseInt($("#quantity").val());
             var productPrice = parseFloat($("#product_name option:selected").data("price"));
             var productName = $("#product_name option:selected").text();
+            var productImage = $("#product_name option:selected").data("image");
 
             if (productId && quantity > 0) {
                 var row = $("#cart-table-body tr[data-id='" + productId + "']");
                 if (row.length > 0) {
-                    // Product is already in cart, update quantity and total
                     var currentQuantity = parseInt(row.find(".quantity-input").val());
                     var newQuantity = currentQuantity + quantity;
                     row.find(".quantity-input").val(newQuantity);
                     var newTotal = newQuantity * productPrice;
                     row.find(".total-cell").text("KES " + newTotal.toFixed(2));
                 } else {
-                    // Product is not in cart, add a new row
                     var newRow = $("<tr data-id='" + productId + "'>");
-                    newRow.html("<td>" + productName + "</td>" +
+                    newRow.html("<td><div class='product-info'><img src='" + productImage + "' alt='" + productName + "' width='50'><p>" + productName + "</p></div></td>" +
                         "<td>KES " + productPrice.toFixed(2) + "</td>" +
                         "<td><input type='number' class='form-control quantity-input' value='" + quantity + "' min='1' required></td>" +
                         "<td class='total-cell'>KES " + (quantity * productPrice).toFixed(2) + "</td>" +
@@ -193,21 +196,20 @@
                 contentType: "application/json",
                 success: function (response) {
                     if (response.success) {
-                        // Show the success modal
                         $("#successModal").modal('show');
-                        
-                        // Clear the cart and update the UI
                         $("#cart-table-body").empty();
                         $("#cart-total").text("KES 0.00");
-
-                        // Hide the modal after a delay (e.g., 2 seconds)
                         setTimeout(function() {
                             $("#successModal").modal('hide');
                         }, 2000);
                     } else {
-                        // Show the error modal
+                        $("#error-message").text(response.error_message);
                         $("#errorModal").modal('show');
                     }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    $("#error-message").text("Oops! Something went wrong. Please try again.");
+                    $("#errorModal").modal('show');
                 }
             });
         });
@@ -225,14 +227,9 @@
 <script src="{%static '/vendors/datatable/buttons/js/buttons.flash.min.js' %}"></script>
 <script src="{%static '/vendors/datatable/buttons/js/buttons.html5.min.js' %}"></script>
 <script src="{%static '/vendors/datatable/buttons/js/buttons.print.min.js' %}"></script>
-<!-- END: Page Vendor JS-->
-
-<!-- START: Page Script JS-->        
 <script src="{%static '/js/datatable.script.js' $}"></script>
 
-
 <style>
-/* Your custom CSS styles can go here */
 .main {
     padding: 20px;
 }
@@ -276,6 +273,10 @@
     font-weight: bold;
     font-size: 18px;
     color: #333;
+}
+
+.product-info img {
+    margin-right: 10px;
 }
 </style>
 

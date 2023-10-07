@@ -9,6 +9,7 @@ from .forms import CategoryForm, ProductForm, ProductNameForm, ProductSelectionF
 from django.db import transaction
 
 from django.contrib.auth.decorators import login_required
+from django.views.generic.base import TemplateView
 
 class CategoryView(View):
     template_name = 'category/category_list.html'
@@ -292,3 +293,69 @@ def employee_performance_report(request):
         'report_title': report_title,
     }
     return render(request, 'reporting/employee_performance_report.html', context)
+
+class StatisticsView(TemplateView):
+    template_name = 'product/statistics.html'
+
+    def get_labels(self):
+        products = Product.objects.all()
+        return [product.name for product in products]
+
+    def get_data(self):
+        products = Product.objects.all()
+        stock_quantity_data = [product.total_stock_quantity for product in products]
+        total_stock_value_data = [product.total_stock_quantity * product.price for product in products]
+        
+        stock_in_data = [product.calculate_stock_in() for product in products]
+        stock_out_data = [product.calculate_stock_out() for product in products]
+
+        return [stock_quantity_data, total_stock_value_data, stock_in_data, stock_out_data]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Product Statistics'
+
+        labels = self.get_labels()
+        data = self.get_data()
+        datasets = [
+            {
+                'label': 'Stock Quantity',
+                'data': data[0],
+                'backgroundColor': 'rgba(75, 192, 192, 0.5)',
+                'borderColor': 'rgba(75, 192, 192, 1)',
+                'pointBackgroundColor': 'rgba(75, 192, 192, 1)',
+                'pointBorderColor': '#fff',
+            },
+            {
+                'label': 'Total Stock Value',
+                'data': data[1],
+                'backgroundColor': 'rgba(255, 99, 132, 0.5)',
+                'borderColor': 'rgba(255, 99, 132, 1)',
+                'pointBackgroundColor': 'rgba(255, 99, 132, 1)',
+                'pointBorderColor': '#fff',
+            },
+            {
+                'label': 'Stock In',
+                'data': data[2],
+                'backgroundColor': 'rgba(54, 162, 235, 0.5)',
+                'borderColor': 'rgba(54, 162, 235, 1)',
+                'pointBackgroundColor': 'rgba(54, 162, 235, 1)',
+                'pointBorderColor': '#fff',
+            },
+            {
+                'label': 'Stock Out',
+                'data': data[3],
+                'backgroundColor': 'rgba(255, 206, 86, 0.5)',
+                'borderColor': 'rgba(255, 206, 86, 1)',
+                'pointBackgroundColor': 'rgba(255, 206, 86, 1)',
+                'pointBorderColor': '#fff',
+            },
+        ]
+
+        context['chart_data'] = {
+            'labels': labels,
+            'datasets': datasets,
+        }
+        print("Context:", context)
+
+        return context

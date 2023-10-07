@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>{{ title }}</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <canvas id="stockQuantityChart" width="400" height="150"></canvas>
+        </div>
+        <div class="col-md-6">
+            <canvas id="totalStockValueChart" width="400" height="150"></canvas>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <canvas id="stockInChart" width="400" height="150"></canvas>
+        </div>
+        <div class="col-md-6">
+            <canvas id="stockOutChart" width="400" height="150"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var ctx1 = document.getElementById('stockQuantityChart').getContext('2d');
+    var ctx2 = document.getElementById('totalStockValueChart').getContext('2d');
+    var ctx3 = document.getElementById('stockInChart').getContext('2d');
+    var ctx4 = document.getElementById('stockOutChart').getContext('2d');
+    
+    var labels = {{ chart_data.labels|safe }};
+    
+    var datasets = {{ chart_data.datasets|safe }};
+    
+    var options = {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                display: true,
+                title: {
+                    display: true,
+                    text: 'Products'
+                }
+            },
+            y: {
+                display: true,
+                title: {
+                    display: true,
+                    text: 'Value'
+                }
+            }
+        }
+    };
+
+    var charts = [];
+    for (var i = 0; i < datasets.length; i++) {
+        var ctx = eval('ctx' + (i + 1));
+        var data = {
+            labels: labels,
+            datasets: [datasets[i]]
+        };
+        charts[i] = new Chart(ctx, {
+            type: 'line',
+            data: data,
+            options: options
+        });
+    }
+</script>
+{% endblock %}

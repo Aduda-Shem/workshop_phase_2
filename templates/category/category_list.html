@@ -44,7 +44,6 @@
                                     <tr>
                                         <th>Name</th>
                                         <th>Description</th>
-                                        <th>Image</th>
                                         <th>Actions</th>
                                         <th>Subcategories</th> 
                                     </tr>
@@ -54,7 +53,6 @@
                                     <tr>
                                         <td>{{ category.name }}</td>
                                         <td>{{ category.description }}</td>
-                                        <td><img src="{{ category.image.url }}" alt="{{ category.name }}" width="50"></td>
                                         <td>
                                             <div class="d-flex justify-content-between">
                                                 <button type="button" class="btn btn-primary btn-sm edit-button" data-toggle="modal" data-target="#editCategoryModal{{ category.id }}">
@@ -81,7 +79,6 @@
                                     <tr>
                                         <th>Name</th>
                                         <th>Description</th>
-                                        <th>Image</th>
                                         <th>Actions</th>
                                         <th>View Subcategories</th>
                                     </tr>
@@ -105,7 +102,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form method="post" action="{% url 'create_category' %}" enctype="multipart/form-data">
+                <form method="post" action="{% url 'create_category' %}">
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="name">Name</label>
@@ -114,10 +111,6 @@
                     <div class="form-group">
                         <label for="description">Description</label>
                         <textarea class="form-control" id="description" name="description" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="image">Image</label>
-                        <input type="file" class="form-control-file" id="image" name="image" required>
                     </div>
                     <button type="submit" class="btn btn-success btn-block">
                         <i class="fas fa-plus"></i> Add Category

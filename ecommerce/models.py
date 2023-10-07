@@ -5,7 +5,6 @@ from simple_history.models import HistoricalRecords
 class Category(models.Model):
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField()
-    image = models.ImageField(upload_to='category_images/')
 
     def __str__(self):
         return self.name
@@ -14,7 +13,6 @@ class Subcategory(models.Model):
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='subcategory_images/')
 
     def __str__(self):
         return self.name
@@ -27,8 +25,8 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     subcategory = models.ForeignKey(Subcategory, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    history = HistoricalRecords()
     image = models.ImageField(upload_to='product_images/')
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.name
