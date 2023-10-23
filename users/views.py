@@ -66,7 +66,7 @@ def login(request):
     
     return render(request, 'users/user_login.html', {'form': form})
 
-@login_required
+@method_decorator(login_required, name='dispatch')
 def logout(request):
     auth_logout(request)
     messages.success(request, f"Successfully logged out")
@@ -212,13 +212,14 @@ class SupplierListView(TemplateView):
     def get_success_url(self):
         return reverse('supplier_list')
 
-@login_required
+@method_decorator(login_required, name='dispatch')
 class SupplierDeleteView(View):
     def delete(self, request, pk):
         supplier = get_object_or_404(Supplier, pk=pk)
         supplier.delete()
         return JsonResponse({'message': 'Supplier deleted successfully'})
 
+@method_decorator(login_required, name='dispatch')
 class SupplierEditView(LoginRequiredMixin, View):
     template_name = 'suppliers/supplier_list.html'
 
@@ -246,7 +247,7 @@ class SupplierEditView(LoginRequiredMixin, View):
         return render(request, self.template_name, context)
     
 
-@login_required
+@method_decorator(login_required, name='dispatch')
 def create_employee(request):
     if request.method == 'POST':
         employee_form = EmployeeForm(request.POST)
