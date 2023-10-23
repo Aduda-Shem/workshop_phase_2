@@ -212,7 +212,7 @@ class SupplierListView(TemplateView):
     def get_success_url(self):
         return reverse('supplier_list')
 
-@method_decorator(login_required, name='dispatch')
+
 class SupplierDeleteView(View):
     def delete(self, request, pk):
         supplier = get_object_or_404(Supplier, pk=pk)
