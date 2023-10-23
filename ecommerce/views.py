@@ -11,6 +11,7 @@ from django.db import transaction
 from django.contrib.auth.decorators import login_required
 from django.views.generic.base import TemplateView
 
+@login_required
 class CategoryView(View):
     template_name = 'category/category_list.html'
 
@@ -58,6 +59,7 @@ class CategoryView(View):
         }
         return JsonResponse(data)
     
+@login_required
 class SubcategoryView(View):
     template_name = 'category/subcategory.html'
 
@@ -107,7 +109,7 @@ class SubcategoryView(View):
         return redirect('category_list')
 
 
-
+@login_required
 class ProductView(View):
     template_name = 'product/product_list.html'
 

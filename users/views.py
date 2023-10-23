@@ -91,6 +91,7 @@ class DecimalEncoder(json.JSONEncoder):
             return str(o)
         return super(DecimalEncoder, self).default(o)
 
+@login_required
 class DashboardView(View):
     def get(self, request):
         is_staff = request.user.is_staff
@@ -161,10 +162,11 @@ class DashboardView(View):
             'categories': categories,
             'categories_with_total_stock': categories_with_total_stock,
             'recent_sales': recent_sales,
-            'sales_chart_data': json.dumps(sales_chart_data, cls=DecimalEncoder),  # Remove '@' symbol
+            'sales_chart_data': json.dumps(sales_chart_data, cls=DecimalEncoder),
         }
 
         return render(request, 'dashboard.html', context)
+    
 @method_decorator(login_required, name='dispatch')
 class SupplierListView(TemplateView):
     template_name = 'suppliers/supplier_list.html'
