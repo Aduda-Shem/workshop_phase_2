@@ -29,6 +29,11 @@
                                 <label for="quantity">Quantity:</label>
                                 <input type="number" class="form-control" id="quantity" name="quantity" value="1" min="1" required>
                             </div>
+                            <div class="form-group">
+                                <label for="selling_point">Selling Point (optional):</label>
+                                <input type="number" class="form-control" id="selling_point" name="selling_point" placeholder="Enter custom price">
+                            </div>
+                            
                             <button type="submit" class="btn btn-primary">Add to Cart</button>
                         </form>
                     </div>
@@ -126,6 +131,9 @@
             var productPrice = parseFloat($("#product_name option:selected").data("price"));
             var productName = $("#product_name option:selected").text();
             var productImage = $("#product_name option:selected").data("image");
+            
+            // Get the custom selling point if provided, otherwise use the default price
+            var sellingPoint = parseFloat($("#selling_point").val()) || productPrice;
 
             if (productId && quantity > 0) {
                 var row = $("#cart-table-body tr[data-id='" + productId + "']");
@@ -133,14 +141,14 @@
                     var currentQuantity = parseInt(row.find(".quantity-input").val());
                     var newQuantity = currentQuantity + quantity;
                     row.find(".quantity-input").val(newQuantity);
-                    var newTotal = newQuantity * productPrice;
+                    var newTotal = newQuantity * sellingPoint; // Use the selling point here
                     row.find(".total-cell").text("KES " + newTotal.toFixed(2));
                 } else {
                     var newRow = $("<tr data-id='" + productId + "'>");
                     newRow.html("<td><div class='product-info'><img src='" + productImage + "' alt='" + productName + "' width='50'><p>" + productName + "</p></div></td>" +
-                        "<td>KES " + productPrice.toFixed(2) + "</td>" +
+                        "<td>KES " + sellingPoint.toFixed(2) + "</td>" +
                         "<td><input type='number' class='form-control quantity-input' value='" + quantity + "' min='1' required></td>" +
-                        "<td class='total-cell'>KES " + (quantity * productPrice).toFixed(2) + "</td>" +
+                        "<td class='total-cell'>KES " + (quantity * sellingPoint).toFixed(2) + "</td>" +
                         "<td><button class='btn btn-danger btn-sm remove-item'>Remove</button></td>");
                     $("#cart-table-body").append(newRow);
                 }

@@ -82,65 +82,71 @@
         </div>
 
 
-    <!-- Add Product Modal -->
-    <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addProductModalLabel">Add Product</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form method="POST" enctype="multipart/form-data" action="{% url 'create_product' %}" class="form">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label for="productName">Name</label>
-                            <input type="text" class="form-control" id="productName" name="name"
-                                placeholder="Enter product name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="productDescription">Description</label>
-                            <textarea class="form-control" id="productDescription" name="description"
-                                placeholder="Enter product description" required></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="productPrice">Price</label>
-                            <input type="number" step="0.01" class="form-control" id="productPrice" name="price"
-                                placeholder="Enter product price" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="productQuantity">Stock Quantity</label>
-                            <input type="number" class="form-control" id="productQuantity" name="stock_quantity"
-                                placeholder="Enter stock quantity" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="productCategory">Category</label>
-                            <select class="form-control" id="productCategory" name="category" required>
-                                <option value="">Select a category</option>
-                                {% for category in categories %}
-                                <option value="{{ category.id }}">{{ category.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="productSubcategory">Subcategory</label>
-                            <select class="form-control" id="productSubcategory" name="subcategory" required>
-                                <option value="">Select a subcategory</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="productImage">Image</label>
-                            <input type="file" class="form-control-file" id="productImage" name="image" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Add Product</button>
-                    </form>
-                </div>
+<!-- Add Product Modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProductModalLabel">Add Product</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" enctype="multipart/form-data" action="{% url 'create_product' %}" class="form">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="productName">Name</label>
+                        <input type="text" class="form-control" id="productName" name="name"
+                            placeholder="Enter product name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productDescription">Description</label>
+                        <textarea class="form-control" id="productDescription" name="description"
+                            placeholder="Enter product description" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="productPurchasePrice">Purchase Price</label>
+                        <input type="number" step="0.01" class="form-control" id="productPurchasePrice"
+                            name="purchase_price" placeholder="Enter purchase price" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productPrice">Price</label>
+                        <input type="number" step="0.01" class="form-control" id="productPrice" name="price"
+                            placeholder="Enter product price" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productQuantity">Stock Quantity</label>
+                        <input type="number" class="form-control" id="productQuantity" name="stock_quantity"
+                            placeholder="Enter stock quantity" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productCategory">Category</label>
+                        <select class="form-control" id="productCategory" name="category" required>
+                            <option value="">Select a category</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="productSubcategory">Subcategory</label>
+                        <select class="form-control" id="productSubcategory" name="subcategory" required>
+                            <option value="">Select a subcategory</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="productImage">Image</label>
+                        <input type="file" class="form-control-file" id="productImage" name="image" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Product</button>
+                </form>
             </div>
         </div>
     </div>
+</div>
+
 
    <!-- Edit Product Modal -->
     <div class="modal fade" id="editProductModal" tabindex="-1" role="dialog" aria-labelledby="editProductModalLabel" aria-hidden="true">

@@ -10,6 +10,8 @@ from django.db import transaction
 
 from django.contrib.auth.decorators import login_required
 from django.views.generic.base import TemplateView
+from datetime import datetime
+from django.db.models import F, ExpressionWrapper, DecimalField
 
 class CategoryView(View):
     template_name = 'category/category_list.html'
@@ -83,7 +85,7 @@ class SubcategoryView(View):
             messages.error(request, 'Subcategory creation failed.')
             print(subcategory_form.errors)
 
-        return redirect('category_list')
+        return redirect('add_subcategory', category_id=category.id)
 
     def put(self, request, subcategory_pk):
         subcategory = get_object_or_404(Subcategory, pk=subcategory_pk)
@@ -104,7 +106,7 @@ class SubcategoryView(View):
         subcategory = get_object_or_404(Subcategory, pk=subcategory_pk)
         subcategory.delete()
         messages.success(request, 'Subcategory deleted successfully.')
-        return redirect('category_list')
+        return redirect('add_subcategory', category_id=category.id)
 
 
 
@@ -112,7 +114,7 @@ class ProductView(View):
     template_name = 'product/product_list.html'
 
     def get(self, request, action=None, pk=None):
-        categories = Category.objects.all() 
+        categories = Category.objects.all()
         subcategories = Subcategory.objects.all()
 
         if action == 'create':
@@ -129,12 +131,12 @@ class ProductView(View):
         form = ProductForm()
         return render(request, self.template_name, {'products': products, 'form': form, 'categories': categories, 'subcategories': subcategories})
 
-
     def post(self, request, action=None, pk=None):
         if action == 'create':
             form = ProductForm(request.POST, request.FILES)
+            print(form.is_valid)
             if form.is_valid():
-                product = form.save() 
+                product = form.save()
                 messages.success(request, 'Product created successfully.')
                 return redirect('product_list')
             else:
@@ -212,7 +214,6 @@ def pos_view(request):
     return render(request, 'sales/selling_point.html', {'cart': cart, 'total': total, 'products': products, 'product_name_form': product_name_form})
 
 
-
 def complete_sale(request):
     if request.method == 'POST':
         cart_data = json.loads(request.body.decode('utf-8'))
@@ -229,17 +230,24 @@ def complete_sale(request):
                     for cart_item in cart_data:
                         product_id = cart_item['product_id']
                         quantity = cart_item['quantity']
+                        selling_price = cart_item.get('selling_price')  # Get custom selling price if provided
 
                         product = Product.objects.get(id=product_id)
 
                         if product.stock_quantity >= quantity:
-                            total_amount = product.price * quantity
+                            if selling_price is not None:
+                                # If a custom selling price is provided, use it to calculate the total amount
+                                total_amount = selling_price * quantity
+                            else:
+                                # If no custom selling price is provided, use the product's default selling price
+                                total_amount = product.price * quantity  # Use 'price' instead of 'selling_price'
 
                             SaleRecord.objects.create(
                                 point_of_sale=point_of_sale,
                                 product=product,
                                 quantity_sold=quantity,
-                                total_amount=total_amount
+                                total_amount=total_amount,
+                                selling_price=selling_price  # Store the selling price in the SaleRecord
                             )
 
                             product.stock_quantity -= quantity
@@ -253,9 +261,6 @@ def complete_sale(request):
                 return JsonResponse({'success': False, 'error_message': str(e)})
 
     return JsonResponse({'success': False, 'error_message': 'Invalid request'})
-
-
-
 
 
 # REPORTING
@@ -297,65 +302,58 @@ def employee_performance_report(request):
 class StatisticsView(TemplateView):
     template_name = 'product/statistics.html'
 
-    def get_labels(self):
-        products = Product.objects.all()
-        return [product.name for product in products]
-
-    def get_data(self):
-        products = Product.objects.all()
-        stock_quantity_data = [product.total_stock_quantity for product in products]
-        total_stock_value_data = [product.total_stock_quantity * product.price for product in products]
-        
-        stock_in_data = [product.calculate_stock_in() for product in products]
-        stock_out_data = [product.calculate_stock_out() for product in products]
-
-        return [stock_quantity_data, total_stock_value_data, stock_in_data, stock_out_data]
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        products = Product.objects.all()
+        total_products = len(products)
+        total_price_sum = sum(product.price for product in products)
+        average_price = total_price_sum / total_products if total_products > 0 else 0
+
         context['title'] = 'Product Statistics'
-
-        labels = self.get_labels()
-        data = self.get_data()
-        datasets = [
-            {
-                'label': 'Stock Quantity',
-                'data': data[0],
-                'backgroundColor': 'rgba(75, 192, 192, 0.5)',
-                'borderColor': 'rgba(75, 192, 192, 1)',
-                'pointBackgroundColor': 'rgba(75, 192, 192, 1)',
-                'pointBorderColor': '#fff',
-            },
-            {
-                'label': 'Total Stock Value',
-                'data': data[1],
-                'backgroundColor': 'rgba(255, 99, 132, 0.5)',
-                'borderColor': 'rgba(255, 99, 132, 1)',
-                'pointBackgroundColor': 'rgba(255, 99, 132, 1)',
-                'pointBorderColor': '#fff',
-            },
-            {
-                'label': 'Stock In',
-                'data': data[2],
-                'backgroundColor': 'rgba(54, 162, 235, 0.5)',
-                'borderColor': 'rgba(54, 162, 235, 1)',
-                'pointBackgroundColor': 'rgba(54, 162, 235, 1)',
-                'pointBorderColor': '#fff',
-            },
-            {
-                'label': 'Stock Out',
-                'data': data[3],
-                'backgroundColor': 'rgba(255, 206, 86, 0.5)',
-                'borderColor': 'rgba(255, 206, 86, 1)',
-                'pointBackgroundColor': 'rgba(255, 206, 86, 1)',
-                'pointBorderColor': '#fff',
-            },
-        ]
-
-        context['chart_data'] = {
-            'labels': labels,
-            'datasets': datasets,
-        }
-        print("Context:", context)
+        context['total_products'] = total_products
+        context['total_price_sum'] = total_price_sum
+        context['average_price'] = average_price
 
         return context
+    
+
+from datetime import date
+
+def product_sales_report(request):
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    # Set default values to today's date if start_date and end_date are None
+    if start_date is None:
+        start_date = date.today()
+    if end_date is None:
+        end_date = date.today()
+
+    data = SaleRecord.objects.values(
+        'point_of_sale__seller__id', 
+        'point_of_sale__seller__first_name', 
+        'point_of_sale__seller__last_name'
+    ).annotate(total_quantity_sold=Sum('quantity_sold')).order_by('-total_quantity_sold')
+
+    for item in data:
+        selling_price = F('point_of_sale__product__price')
+        purchase_price = F('point_of_sale__product__purchase_price')
+        profit_loss_expr = ExpressionWrapper(
+            selling_price - purchase_price, 
+            output_field=DecimalField(max_digits=10, decimal_places=2)
+        )
+        item['profit_or_loss'] = SaleRecord.objects.filter(
+            point_of_sale__seller__id=item['point_of_sale__seller__id'],
+            point_of_sale__sale_datetime__date__gte=start_date,
+            point_of_sale__sale_datetime__date__lte=end_date
+        ).annotate(profit_or_loss=profit_loss_expr).aggregate(Sum('profit_or_loss'))['profit_or_loss__sum']
+
+    report_title = "Product Sales Report"
+
+    context = {
+        'data': data,
+        'report_title': report_title,
+    }
+
+    return render(request, 'reporting/product_sales_report.html', context)

@@ -161,7 +161,7 @@ class DashboardView(View):
             'categories': categories,
             'categories_with_total_stock': categories_with_total_stock,
             'recent_sales': recent_sales,
-            'sales_chart_data': json.dumps(sales_chart_data, cls=DecimalEncoder),  # Remove '@' symbol
+            'sales_chart_data': json.dumps(sales_chart_data, cls=DecimalEncoder), 
         }
 
         return render(request, 'dashboard.html', context)

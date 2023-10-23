@@ -10,66 +10,39 @@
     </div>
     <div class="row">
         <div class="col-md-6">
-            <canvas id="stockQuantityChart" width="400" height="150"></canvas>
-        </div>
-        <div class="col-md-6">
-            <canvas id="totalStockValueChart" width="400" height="150"></canvas>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <canvas id="stockInChart" width="400" height="150"></canvas>
-        </div>
-        <div class="col-md-6">
-            <canvas id="stockOutChart" width="400" height="150"></canvas>
+            <canvas id="productStatisticsChart" width="400" height="400"></canvas>
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    var ctx1 = document.getElementById('stockQuantityChart').getContext('2d');
-    var ctx2 = document.getElementById('totalStockValueChart').getContext('2d');
-    var ctx3 = document.getElementById('stockInChart').getContext('2d');
-    var ctx4 = document.getElementById('stockOutChart').getContext('2d');
-    
-    var labels = {{ chart_data.labels|safe }};
-    
-    var datasets = {{ chart_data.datasets|safe }};
-    
-    var options = {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            x: {
-                display: true,
-                title: {
-                    display: true,
-                    text: 'Products'
-                }
-            },
-            y: {
-                display: true,
-                title: {
-                    display: true,
-                    text: 'Value'
-                }
-            }
-        }
-    };
+    document.addEventListener("DOMContentLoaded", function () {
+        var ctx = document.getElementById('productStatisticsChart').getContext('2d');
 
-    var charts = [];
-    for (var i = 0; i < datasets.length; i++) {
-        var ctx = eval('ctx' + (i + 1));
+        var totalProducts = {{ total_products }};
+        var totalPriceSum = {{ total_price_sum }};
+        var averagePrice = {{ average_price }};
+
         var data = {
-            labels: labels,
-            datasets: [datasets[i]]
+            labels: ['Total Products', 'Total Price Sum', 'Average Price'],
+            datasets: [{
+                data: [totalProducts, totalPriceSum, averagePrice],
+                backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 99, 132, 0.2)', 'rgba(255, 205, 86, 0.2)'],
+                borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)', 'rgba(255, 205, 86, 1)'],
+                borderWidth: 1,
+            }]
         };
-        charts[i] = new Chart(ctx, {
-            type: 'line',
+
+        var options = {
+            responsive: true,
+        };
+
+        var chart = new Chart(ctx, {
+            type: 'pie',
             data: data,
-            options: options
+            options: options,
         });
-    }
+    });
 </script>
 {% endblock %}
