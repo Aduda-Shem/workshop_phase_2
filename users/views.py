@@ -91,6 +91,7 @@ class DecimalEncoder(json.JSONEncoder):
             return str(o)
         return super(DecimalEncoder, self).default(o)
 
+@method_decorator(login_required, name='dispatch')
 class DashboardView(View):
     def get(self, request):
         is_staff = request.user.is_staff
@@ -165,6 +166,7 @@ class DashboardView(View):
         }
 
         return render(request, 'dashboard.html', context)
+    
 @method_decorator(login_required, name='dispatch')
 class SupplierListView(TemplateView):
     template_name = 'suppliers/supplier_list.html'
@@ -210,7 +212,7 @@ class SupplierListView(TemplateView):
     def get_success_url(self):
         return reverse('supplier_list')
 
-@login_required
+
 class SupplierDeleteView(View):
     def delete(self, request, pk):
         supplier = get_object_or_404(Supplier, pk=pk)

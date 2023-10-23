@@ -14,7 +14,7 @@ urlpatterns = [
     path('suppliers/', SupplierListView.as_view(), name='supplier_list'),
     path('suppliers/add/', SupplierListView.as_view(), name='supplier_add'),
     path('suppliers/edit/<int:pk>/', SupplierListView.as_view(), name='supplier_edit'),
-    path('suppliers/delete/<int:pk>/', SupplierDeleteView, name='supplier_delete_ajax'),
+    path('suppliers/delete/<int:pk>/', SupplierDeleteView.as_view(), name='supplier_delete_ajax'),
     
     # URLs for managing Employee
     path('create_employee/', create_employee, name='create_employee'),

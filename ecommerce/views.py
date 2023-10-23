@@ -13,6 +13,9 @@ from django.views.generic.base import TemplateView
 from datetime import datetime
 from django.db.models import F, ExpressionWrapper, DecimalField
 
+from django.utils.decorators import method_decorator
+
+@method_decorator(login_required, name='dispatch')
 class CategoryView(View):
     template_name = 'category/category_list.html'
 
@@ -60,6 +63,7 @@ class CategoryView(View):
         }
         return JsonResponse(data)
     
+@method_decorator(login_required, name='dispatch')
 class SubcategoryView(View):
     template_name = 'category/subcategory.html'
 
@@ -109,7 +113,7 @@ class SubcategoryView(View):
         return redirect('add_subcategory', category_id=category.id)
 
 
-
+@method_decorator(login_required, name='dispatch')
 class ProductView(View):
     template_name = 'product/product_list.html'
 
@@ -174,6 +178,7 @@ class ProductView(View):
 
         return JsonResponse(statistics_data)
 
+@method_decorator(login_required, name='dispatch')
 def get_subcategories(request):
     category_id = request.GET.get('category_id')
 
