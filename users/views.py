@@ -246,7 +246,7 @@ class SupplierEditView(LoginRequiredMixin, View):
         return render(request, self.template_name, context)
     
 
-@method_decorator(login_required, name='dispatch')
+@login_required
 def create_employee(request):
     if request.method == 'POST':
         employee_form = EmployeeForm(request.POST)
