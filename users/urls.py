@@ -8,7 +8,7 @@ urlpatterns = [
     path('accounts/login/', login, name='login'),
     path('logout/', logout, name='logout'),
     path('profile/', UserProfileView.as_view(), name='user_profile'),
-    path('', DashboardView(), name='dashboard'),
+    path('', DashboardView.as_view(), name='dashboard'),
 
     # URLs for managing Suppliers
     path('suppliers/', SupplierListView.as_view(), name='supplier_list'),

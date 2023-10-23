@@ -91,7 +91,7 @@ class DecimalEncoder(json.JSONEncoder):
             return str(o)
         return super(DecimalEncoder, self).default(o)
 
-@login_required
+@method_decorator(login_required, name='dispatch')
 class DashboardView(View):
     def get(self, request):
         is_staff = request.user.is_staff
