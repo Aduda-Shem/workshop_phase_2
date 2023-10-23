@@ -66,7 +66,7 @@ def login(request):
     
     return render(request, 'users/user_login.html', {'form': form})
 
-@method_decorator(login_required, name='dispatch')
+@login_required
 def logout(request):
     auth_logout(request)
     messages.success(request, f"Successfully logged out")
