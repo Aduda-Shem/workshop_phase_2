@@ -219,7 +219,6 @@ class SupplierDeleteView(View):
         supplier.delete()
         return JsonResponse({'message': 'Supplier deleted successfully'})
 
-@method_decorator(login_required, name='dispatch')
 class SupplierEditView(LoginRequiredMixin, View):
     template_name = 'suppliers/supplier_list.html'
 
