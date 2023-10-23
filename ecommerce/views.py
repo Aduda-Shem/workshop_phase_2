@@ -12,6 +12,8 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic.base import TemplateView
 from datetime import datetime
 from django.db.models import F, ExpressionWrapper, DecimalField
+from datetime import date
+
 
 class CategoryView(View):
     template_name = 'category/category_list.html'
@@ -315,16 +317,27 @@ class StatisticsView(TemplateView):
         context['total_price_sum'] = total_price_sum
         context['average_price'] = average_price
 
+        context['sales_chart_data'] = {
+            'labels': ['Total Products', 'Total Price Sum', 'Average Price'],
+            'datasets': [
+                {
+                    'label': 'Product Data',
+                    'data': [total_products, total_price_sum, average_price],
+                    'backgroundColor': 'rgba(75, 192, 192, 0.2)',
+                    'borderColor': 'rgba(75, 192, 192, 1)',
+                    'borderWidth': 1,
+                }
+            ]
+        }
+
         return context
     
 
-from datetime import date
 
 def product_sales_report(request):
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
 
-    # Set default values to today's date if start_date and end_date are None
     if start_date is None:
         start_date = date.today()
     if end_date is None:
