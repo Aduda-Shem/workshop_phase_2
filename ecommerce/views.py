@@ -178,7 +178,6 @@ class ProductView(View):
 
         return JsonResponse(statistics_data)
 
-@method_decorator(login_required, name='dispatch')
 def get_subcategories(request):
     category_id = request.GET.get('category_id')
 
