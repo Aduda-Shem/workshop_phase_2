@@ -11,7 +11,7 @@ from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 from ecommerce.models import Category, Product, SaleRecord
 
-from users.forms import EmployeeForm, LoginForm, SupplierForm
+from users.forms import CustomPasswordResetForm, EmployeeForm, LoginForm, SupplierForm
 from .models import Company, Employee, Supplier, User
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -43,6 +43,14 @@ from django.contrib.auth import get_user_model
 import random
 import string
 import decimal
+
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
+from django.urls import reverse_lazy
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import default_token_generator
+
+
 
 
 # Authentication Views
@@ -355,3 +363,41 @@ def edit_employee(request, employee_id):
         form = EmployeeForm(instance=employee)
 
     return render(request, 'edit_employee.html', {'form': form, 'employee': employee})
+
+
+# password reset
+class CustomPasswordResetView(PasswordResetView):
+    template_name = 'registration/password_reset_form.html'
+    email_template_name = 'registration/password_reset_email.html'
+    success_url = reverse_lazy('password_reset_done')
+    form_class = CustomPasswordResetForm
+
+    def form_valid(self, form):
+        email = form.cleaned_data['email']
+        UserModel = get_user_model()
+        user = UserModel.objects.filter(email=email).first()
+
+        if user:
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+
+            reset_url = reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
+            reset_url = self.request.build_absolute_uri(reset_url)
+
+            subject = 'Password Reset'
+            message = f'Click the following link to reset your password:\n{reset_url}'
+            from_email = 'noreply@netbotgroup.com'
+            recipient_list = [email]
+            send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+
+        return super().form_valid(form)
+
+class CustomPasswordResetDoneView(PasswordResetDoneView):
+    template_name = 'registration/password_reset_done.html'
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = 'registration/password_reset_confirm.html'
+    success_url = reverse_lazy('password_reset_complete')
+
+class CustomPasswordResetCompleteView(PasswordResetCompleteView):
+    template_name = 'registration/password_reset_complete.html'

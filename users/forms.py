@@ -2,6 +2,7 @@
 from django import forms
 from .models import Employee, Supplier
 from django.core.validators import EmailValidator
+from django.contrib.auth.forms import PasswordResetForm
 
 class LoginForm(forms.Form):
     email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'placeholder': 'Enter your email', 'class': 'custom-email-input form-control'}))
@@ -27,3 +28,10 @@ class EmployeeForm(forms.Form):
     national_id = forms.CharField(max_length=8, required=True)
     salary = forms.DecimalField(max_digits=10, decimal_places=2, required=True)
 
+
+class CustomPasswordResetForm(PasswordResetForm):
+    email = forms.EmailField(
+        label="Email",
+        max_length=254,
+        widget=forms.EmailInput(attrs={'class': 'form-control'}),
+    )
