@@ -276,7 +276,13 @@ def create_employee(request):
             employee.save()
 
             subject = 'Welcome to Our Company'
-            html_message = render_to_string('email/welcome_email_template.html', {'employee': employee})
+
+            context = {
+                'employee': employee,
+                'password': password,
+            }
+
+            html_message = render_to_string('email/welcome_email_template.html', context)
             plain_message = strip_tags(html_message)
             from_email = 'noreply@netbotgroup.com'
             to_email = user.email
