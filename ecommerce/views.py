@@ -1,5 +1,5 @@
 import json
-from django.http import JsonResponse
+from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.views import View
@@ -48,19 +48,35 @@ class CategoryView(View):
         
         return redirect('category_list')
 
-    def delete(self, request, pk):
-        category = get_object_or_404(Category, pk=pk)
-        category.delete()
-        messages.success(request, 'Category deleted successfully.')
-        return redirect('category_list')
+    def delete(self, request, pk=None):
+        if pk is not None:
+            try:
+                category = Category.objects.get(pk=pk)
+                category.delete()
+                messages.success(request, 'Category deleted successfully.')
+                return redirect('category_list')
+            except Category.DoesNotExist:
+                messages.error(request, 'Category not found.')
+                return redirect('category_list')
+        else:
+            messages.error(request, 'No category ID provided for deletion.')
+            return redirect('category_list')
+
+        
 
     def get_category_data(self, request, category):
         data = {
             'name': category.name,
             'description': category.description,
-            'image_url': category.image.url,
         }
         return JsonResponse(data)
+    
+class CategoryDeleteView(View):
+    def post(self, request, pk):
+        category = get_object_or_404(Category, pk=pk)
+        category.delete()
+        messages.success(request, 'Category deleted successfully.')
+        return redirect('category_list')
     
 class SubcategoryView(View):
     template_name = 'category/subcategory.html'
@@ -104,11 +120,16 @@ class SubcategoryView(View):
 
         return render(request, self.template_name, {'form': form})
 
-    def delete(self, request, subcategory_pk):
-        subcategory = get_object_or_404(Subcategory, pk=subcategory_pk)
+class DeleteSubcategoryView(View):
+    def post(self, request, subcategory_id):
+        subcategory = get_object_or_404(Subcategory, pk=subcategory_id)
+        category_id = subcategory.category.id 
+        
         subcategory.delete()
         messages.success(request, 'Subcategory deleted successfully.')
-        return redirect('add_subcategory', category_id=category.id)
+        return redirect('add_subcategory', category_id=category_id)
+
+
 
 
 
@@ -153,6 +174,7 @@ class ProductView(View):
                 return redirect('product_list')
             else:
                 messages.error(request, 'Product update failed.')
+
         elif action == 'delete':
             product = get_object_or_404(Product, pk=pk)
             product.delete()

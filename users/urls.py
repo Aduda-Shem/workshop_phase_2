@@ -2,7 +2,7 @@ from django.urls import path
 from django.db.models import Sum
 from ecommerce import views
 
-from ecommerce.views import CategoryView, ProductView, StatisticsView, SubcategoryView, best_selling_product_report, complete_sale, employee_performance_report, get_subcategories, pos_view, product_sales_report, stock_report
+from ecommerce.views import CategoryDeleteView, CategoryView, DeleteSubcategoryView, ProductView, StatisticsView, SubcategoryView, best_selling_product_report, complete_sale, employee_performance_report, get_subcategories, pos_view, product_sales_report, stock_report
 from .views import  DashboardView, SupplierDeleteView, SupplierEditView, SupplierListView, UserProfileView, activate_employee, create_employee, edit_employee, employee_list, login, logout, suspend_employee
 
 urlpatterns = [
@@ -29,20 +29,20 @@ urlpatterns = [
     path('categories/', CategoryView.as_view(), name='category_list'),
     path('categories/create/', CategoryView.as_view(), name='create_category'),
     path('categories/update/<int:pk>/', CategoryView.as_view(), name='update_category'),
-    path('categories/delete/<int:pk>/', CategoryView.as_view(), name='delete_category'),
+    path('categories/delete/<int:pk>/', CategoryDeleteView.as_view(), name='delete_category'),
 
 
     # URL patterns for managing subcategories within a specific category
     path('category/<int:category_id>/subcategories/', SubcategoryView.as_view(), name='subcategory_category'),
     path('category/<int:category_id>/subcategories/add/', SubcategoryView.as_view(), name='add_subcategory'),
     path('category/<int:category_id>/subcategories/<int:subcategory_id>/edit/', SubcategoryView.as_view(), name='edit_subcategory'),
-    path('category/<int:category_id>/subcategories/<int:subcategory_id>/delete/', SubcategoryView.as_view(), name='delete_subcategory'),
+    path('subcategories/<int:subcategory_id>/delete/', DeleteSubcategoryView.as_view(), name='delete_subcategory'),
     
     # URLs for managing products
     path('products/', ProductView.as_view(), name='product_list'),
     path('products/create/', ProductView.as_view(), {'action': 'create'}, name='create_product'),
     path('products/update/<int:pk>/', ProductView.as_view(), {'action': 'update'}, name='update_product'),
-    path('products/delete/<int:pk>/', ProductView.as_view(), {'action': 'delete'}, name='delete_product'),
+    path('delete_product/<int:pk>/', ProductView.as_view(), {'action': 'delete'}, name='delete_product'),
     path('products/statistics/', ProductView.as_view(), {'action': 'statistics'}, name='product_statistics'),
     path('get_subcategories/', views.get_subcategories, name='get_subcategories'),
 

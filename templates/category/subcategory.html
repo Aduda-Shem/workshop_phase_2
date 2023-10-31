@@ -73,12 +73,14 @@
                                                     <button type="button" class="btn btn-primary btn-sm edit-button" data-toggle="modal" data-target="#editSubcategoryModal{{ subcategory.id }}">
                                                         <i class="fas fa-edit"></i> Edit
                                                     </button>
-                                                    <form method="post" action="{% url 'delete_subcategory' category_id=category.id subcategory_id=subcategory.id %}">
+                                                    <form method="post" action="{% url 'delete_subcategory' subcategory_id=subcategory.id %}">
                                                         {% csrf_token %}
                                                         <button type="submit" class="btn btn-danger btn-sm">
                                                             <i class="fas fa-trash-alt"></i> Delete
                                                         </button>
                                                     </form>
+                                                    
+                                                    
                                                 </div>
                                             </td>
                                         </tr>
