@@ -3,13 +3,19 @@ from django.db.models import Sum
 from ecommerce import views
 
 from ecommerce.views import CategoryDeleteView, CategoryView, DeleteSubcategoryView, ProductView, StatisticsView, SubcategoryView, best_selling_product_report, complete_sale, employee_performance_report, get_subcategories, pos_view, product_sales_report, stock_report
-from .views import  DashboardView, SupplierDeleteView, SupplierEditView, SupplierListView, UserProfileView, activate_employee, create_employee, edit_employee, employee_list, login, logout, suspend_employee
+from .views import  CustomPasswordResetCompleteView, CustomPasswordResetConfirmView, CustomPasswordResetDoneView, CustomPasswordResetView, DashboardView, SupplierDeleteView, SupplierEditView, SupplierListView, UserProfileView, activate_employee, create_employee, edit_employee, employee_list, login, logout, suspend_employee
 
 urlpatterns = [
     path('accounts/login/', login, name='login'),
     path('logout/', logout, name='logout'),
     path('profile/', UserProfileView.as_view(), name='user_profile'),
     path('', DashboardView.as_view(), name='dashboard'),
+
+    # passwordreset links
+    path('password_reset/', CustomPasswordResetView.as_view(), name='password_reset'),
+    path('password_reset/done/', CustomPasswordResetDoneView.as_view(), name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', CustomPasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('reset/done/', CustomPasswordResetCompleteView.as_view(), name='password_reset_complete'),
 
     # URLs for managing Suppliers
     path('suppliers/', SupplierListView.as_view(), name='supplier_list'),

@@ -10,6 +10,36 @@
     <link rel="stylesheet" href="{% static 'fonts/material-design-iconic-font/css/material-design-iconic-font.css' %}">
     <!-- Tailwind CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .messages {
+            text-align: center;
+        }
+        .alert {
+            padding: 10px;
+            margin: 10px auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 70%;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .forgot-password-link {
+            color: #1da1f2;
+            text-decoration: none;
+            transition: text-decoration 0.2s;
+        }
+        .forgot-password-link:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 
 <body class="bg-gradient-to-r from-blue-400 via-grey-500 to-white-500">
@@ -52,6 +82,9 @@
                     </button>
                 </div>
             </form>
+            <div class="mt-4 text-center">
+                <a href="{% url 'password_reset' %}" class="forgot-password-link">Forgot your password?</a>
+            </div>
         </div>
     </div>
 </body>
