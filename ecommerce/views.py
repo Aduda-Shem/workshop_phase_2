@@ -1,5 +1,5 @@
 import json
-from django.http import HttpResponseBadRequest, JsonResponse
+from django.http import HttpResponseBadRequest, HttpResponseForbidden, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.views import View
@@ -37,16 +37,19 @@ class CategoryView(View):
         return redirect('category_list')
 
     def put(self, request, pk):
-        category = get_object_or_404(Category, pk=pk)
-        form = CategoryForm(request.POST, request.FILES, instance=category)
+        if "_method" in request.POST and request.POST["_method"] == "put":
+            category = get_object_or_404(Category, pk=pk)
+            form = CategoryForm(request.POST, request.FILES, instance=category)
 
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Category updated successfully.')
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Category updated successfully.')
+            else:
+                messages.error(request, 'Category update failed.')
+            
+            return redirect('category_list')
         else:
-            messages.error(request, 'Category update failed.')
-        
-        return redirect('category_list')
+            return HttpResponseForbidden("Invalid request")
 
     def delete(self, request, pk=None):
         if pk is not None:
@@ -103,22 +106,32 @@ class SubcategoryView(View):
             messages.error(request, 'Subcategory creation failed.')
             print(subcategory_form.errors)
 
-        return redirect('add_subcategory', category_id=category.id)
+        return redirect('add_subcategory', category_id=category_id)
+    
+    
 
-    def put(self, request, subcategory_pk):
-        subcategory = get_object_or_404(Subcategory, pk=subcategory_pk)
-        form = SubcategoryForm(instance=subcategory)
-
-        if request.method == 'POST':
+    def put(self, request, category_id, subcategory_id):
+        if "_method" in request.POST and request.POST["_method"] == "put":
+            subcategory = get_object_or_404(Subcategory, pk=subcategory_id)
             form = SubcategoryForm(request.POST, request.FILES, instance=subcategory)
+
             if form.is_valid():
                 form.save()
                 messages.success(request, 'Subcategory updated successfully.')
-                return redirect('category_list')
+                return redirect('subcategory_category', category_id=category_id)  
             else:
                 messages.error(request, 'Subcategory update failed.')
 
-        return render(request, self.template_name, {'form': form})
+            context = {
+                'category_id': category_id,
+                'subcategory_id': subcategory_id,
+                'form': form,
+            }
+            return redirect('edit_subcategory', category_id=category_id, subcategory_id=subcategory_id)
+        else:
+            return HttpResponseForbidden("Invalid request")
+
+
 
 class DeleteSubcategoryView(View):
     def post(self, request, subcategory_id):

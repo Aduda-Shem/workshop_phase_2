@@ -41,9 +41,9 @@ urlpatterns = [
     # URL patterns for managing subcategories within a specific category
     path('category/<int:category_id>/subcategories/', SubcategoryView.as_view(), name='subcategory_category'),
     path('category/<int:category_id>/subcategories/add/', SubcategoryView.as_view(), name='add_subcategory'),
-    path('category/<int:category_id>/subcategories/<int:subcategory_id>/edit/', SubcategoryView.as_view(), name='edit_subcategory'),
+    path('category/<int:category_id>/subcategories/<int:subcategory_id>/edit/', SubcategoryView.as_view(), name='edit_subcategory'),  # Use a separate view for editing
     path('subcategories/<int:subcategory_id>/delete/', DeleteSubcategoryView.as_view(), name='delete_subcategory'),
-    
+
     # URLs for managing products
     path('products/', ProductView.as_view(), name='product_list'),
     path('products/create/', ProductView.as_view(), {'action': 'create'}, name='create_product'),

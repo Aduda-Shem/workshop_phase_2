@@ -136,6 +136,7 @@
             <div class="modal-body">
                 <form method="post" action="{% url 'update_category' category.id %}">
                     {% csrf_token %}
+                    <input type="hidden" name="_method" value="put">
                     <div class="form-group">
                         <label for="editName{{ category.id }}">Name</label>
                         <input type="text" class="form-control" id="editName{{ category.id }}" name="name" value="{{ category.name }}" required>

@@ -24,7 +24,7 @@
                 <div class="card">
                     <div class="card-header justify-content-between align-items-center">
                         <h4 class="card-title">Subcategory List</h4>
-                        <a href="{% url 'add_subcategory' category_id=category.id %}" class="btn btn-success btn-sm float-right" data-toggle="modal" data-target="#addSubcategoryModal">
+                        <a href="" class="btn btn-success btn-sm float-right" data-toggle="modal" data-target="#addSubcategoryModal">
                             <i class="fas fa-plus"></i> Add Subcategory
                         </a>
                     </div>
@@ -70,9 +70,9 @@
                                             <td>{{ subcategory.description }}</td>
                                             <td>
                                                 <div class="btn-group">
-                                                    <button type="button" class="btn btn-primary btn-sm edit-button" data-toggle="modal" data-target="#editSubcategoryModal{{ subcategory.id }}">
+                                                    <!-- <button type="button" class="btn btn-primary btn-sm edit-button" data-toggle="modal" data-target="#editSubcategoryModal{{ subcategory.id }}">
                                                         <i class="fas fa-edit"></i> Edit
-                                                    </button>
+                                                    </button> -->
                                                     <form method="post" action="{% url 'delete_subcategory' subcategory_id=subcategory.id %}">
                                                         {% csrf_token %}
                                                         <button type="submit" class="btn btn-danger btn-sm">
@@ -131,6 +131,7 @@
     </div>
 </div>
 
+
 <!-- Edit Subcategory Modals -->
 {% for subcategory in subcategories %}
 <div class="modal fade" id="editSubcategoryModal{{ subcategory.id }}" tabindex="-1" role="dialog" aria-labelledby="editSubcategoryModalLabel{{ subcategory.id }}" aria-hidden="true">
@@ -145,12 +146,24 @@
             <div class="modal-body">
                 <form method="post" action="{% url 'edit_subcategory' category_id=category.id subcategory_id=subcategory.id %}" enctype="multipart/form-data">
                     {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <input type="hidden" name="_method" value="put">
+                    <div class="form-group">
+                        <label for="editName{{ subcategory.id }}">Name</label>
+                        <input type="text" class="form-control" id="editName{{ subcategory.id }}" name="name" value="{{ subcategory.name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDescription{{ subcategory.id }}">Description</label>
+                        <textarea class="form-control" id="editDescription{{ subcategory.id }}" name="description" required>{{ subcategory.description }}</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check"></i> Save Changes
+                    </button>
                 </form>
             </div>
         </div>
     </div>
 </div>
 {% endfor %}
+
+
 {% endblock %}
