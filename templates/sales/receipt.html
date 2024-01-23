@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Your receipt HTML goes here -->
+<div class="container-fluid">
+    <h2>Receipt</h2>
+    <ul>
+        {% for item in cart_items %}
+        <li>
+            <span>{{ item.item.name }}</span>
+            <span>Price: KES {{ item.item.price }}</span>
+            <span>Quantity: {{ item.quantity }}</span>
+            <span>Total: KES {{ item.item.price * item.quantity }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+    <p>Total Amount: KES {{ total_amount }}</p>
+</div>
+{% endblock %}

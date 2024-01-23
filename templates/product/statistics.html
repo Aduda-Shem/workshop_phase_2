@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<main>
+    <div class="container-fluid site-width">
+        <div class="row">
+            <div class="col-12">
+                <h2>{{ title }}</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <canvas id="productStatisticsChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const ctx = document.getElementById('productStatisticsChart').getContext('2d');
+
+        const totalProducts = {{ total_products |safe }};
+        const totalPriceSum = {{ total_price_sum |safe }};
+        const averagePrice = {{ average_price |safe }};
+
+        const data = {
+            labels: ['Total Products', 'Total Price Sum', 'Average Price'],
+            datasets: [{
+                label: 'Product Data',
+                data: [totalProducts, totalPriceSum, averagePrice],
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(255, 205, 86, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(255, 205, 86, 1)'
+                ],
+                borderWidth: 1,
+            }]
+        };
+
+        const options = {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        };
+
+        const chart = new Chart(ctx, {
+            type: 'bar',
+            data: data,
+            options: options,
+        });
+    });
+</script>
+{% endblock %}

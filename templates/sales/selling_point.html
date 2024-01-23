@@ -1,0 +1,307 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<main>
+    <div class="container-fluid site-width">
+        <div class="row">
+            <div class="col-12 align-self-center">
+                <h2>Welcome to our Point of Sale (POS)</h2>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="post" id="add-to-cart-form">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="product_name">Select a Product:</label>
+                                <select class="form-control select2" id="product_name" name="product_name">
+                                    <option value="">Select a product</option>
+                                    {% for product in products %}
+                                        <option value="{{ product.id }}" data-price="{{ product.price }}" data-image="{{ product.image.url }}">{{ product.name }} - KES {{ product.price }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>                            
+                            
+                            
+                            <div class="form-group">
+                                <label for="quantity">Quantity:</label>
+                                <input type="number" class="form-control" id="quantity" name="quantity" value="1" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="selling_point">Selling Point (optional):</label>
+                                <input type="number" class="form-control" id="selling_point" name="selling_point" placeholder="Enter custom price">
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">Add to Cart</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h4>Your Shopping Cart</h4>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Price</th>
+                                        <th>Quantity</th>
+                                        <th>Total</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cart-table-body">
+                                    {% for item in cart %}
+                                    <tr data-id="{{ item.product.id }}">
+                                        <td>
+                                            <div class="product-info">
+                                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="50">
+                                                <p>{{ item.product.name }}</p>
+                                            </div>
+                                        </td>
+                                        <td>KES {{ item.product.price }}</td>
+                                        <td>
+                                            <input type="number" class="form-control quantity-input" value="{{ item.quantity }}" min="1" required>
+                                        </td>
+                                        <td class="total-cell">KES {{ item.total }}</td>
+                                        <td>
+                                            <button class="btn btn-danger btn-sm remove-item">Remove</button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <p>Total: KES <span id="cart-total">{{ total }}</span></p>
+                        <button class="btn btn-success btn-block" id="make-sale-button">Complete Sale</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Sale Completed!</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Thank you for shopping with us!
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">Sale Failed</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="error-message">Oops! Something went wrong. Please try again.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#add-to-cart-form").submit(function (e) {
+            e.preventDefault();
+            var productId = $("#product_name").val();
+            var quantity = parseInt($("#quantity").val());
+            var productPrice = parseFloat($("#product_name option:selected").data("price"));
+            var productName = $("#product_name option:selected").text();
+            var productImage = $("#product_name option:selected").data("image");
+            
+            var sellingPoint = parseFloat($("#selling_point").val()) || productPrice;
+
+            if (productId && quantity > 0) {
+                var row = $("#cart-table-body tr[data-id='" + productId + "']");
+                if (row.length > 0) {
+                    var currentQuantity = parseInt(row.find(".quantity-input").val());
+                    var newQuantity = currentQuantity + quantity;
+                    row.find(".quantity-input").val(newQuantity);
+                    var newTotal = newQuantity * sellingPoint; 
+                    row.find(".total-cell").text("KES " + newTotal.toFixed(2));
+                } else {
+                    var newRow = $("<tr data-id='" + productId + "'>");
+                    newRow.html("<td><div class='product-info'><img src='" + productImage + "' alt='" + productName + "' width='50'><p>" + productName + "</p></div></td>" +
+                        "<td>KES " + sellingPoint.toFixed(2) + "</td>" +
+                        "<td><input type='number' class='form-control quantity-input' value='" + quantity + "' min='1' required></td>" +
+                        "<td class='total-cell'>KES " + (quantity * sellingPoint).toFixed(2) + "</td>" +
+                        "<td><button class='btn btn-danger btn-sm remove-item'>Remove</button></td>");
+                    $("#cart-table-body").append(newRow);
+                }
+
+                updateCartTotal();
+            }
+        });
+
+        $(document).on("click", ".remove-item", function () {
+            var row = $(this).closest("tr");
+            var productId = row.data("id");
+            row.remove();
+            updateCartTotal();
+        });
+
+        function updateCartTotal() {
+            var total = 0;
+            $("#cart-table-body tr").each(function () {
+                var quantity = parseInt($(this).find(".quantity-input").val());
+                var price = parseFloat($(this).find("td:nth-child(2)").text().replace("KES ", ""));
+                var itemTotal = quantity * price;
+                total += itemTotal;
+                $(this).find(".total-cell").text("KES " + itemTotal.toFixed(2));
+            });
+            $("#cart-total").text("KES " + total.toFixed(2));
+        }
+
+        $(document).ready(function () {
+            $(".select2").select2({
+                placeholder: "Search for a product",
+                allowClear: true,
+                templateResult: function (data) {
+                    if (data.id === '') {
+                        return 'Search for a product';
+                    }
+                    return $('<span>' + data.text + '</span>');
+                }
+            });
+        });
+
+
+
+        $("#make-sale-button").click(function () {
+            var cartData = [];
+            $("#cart-table-body tr").each(function () {
+                var productId = $(this).data("id");
+                var quantity = parseInt($(this).find(".quantity-input").val());
+                cartData.push({
+                    product_id: productId,
+                    quantity: quantity
+                });
+            });
+
+            var completeSaleUrl = "{% url 'complete_sale' %}";
+
+            var csrfToken = "{{ csrf_token }}";
+
+            $.ajaxSetup({
+                headers: {
+                    "X-CSRFToken": csrfToken
+                }
+            });
+
+            $.ajax({
+                url: completeSaleUrl,
+                method: "POST",
+                data: JSON.stringify(cartData),
+                contentType: "application/json",
+                success: function (response) {
+                    if (response.success) {
+                        $("#successModal").modal('show');
+                        $("#cart-table-body").empty();
+                        $("#cart-total").text("KES 0.00");
+                        setTimeout(function() {
+                            $("#successModal").modal('hide');
+                        }, 2000);
+                    } else {
+                        $("#error-message").text(response.error_message);
+                        $("#errorModal").modal('show');
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    $("#error-message").text("Oops! Something went wrong. Please try again.");
+                    $("#errorModal").modal('show');
+                }
+            });
+        });
+    });
+</script>
+
+<script src="{%static '/vendors/datatable/js/jquery.dataTables.min.js'%}"></script> 
+<script src="{%static '/vendors/datatable/js/dataTables.bootstrap4.min.js'%}"></script>
+<script src="{%static '/vendors/datatable/jszip/jszip.min.js' %}"></script>
+<script src="{%static '/vendors/datatable/pdfmake/pdfmake.min.js' %}"></script>
+<script src="{%static '/vendors/datatable/pdfmake/vfs_fonts.js' %}"></script>
+<script src="{%static '/vendors/datatable/buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{%static '/vendors/datatable/buttons/js/buttons.bootstrap4.min.js' %}"></script>
+<script src="{%static '/vendors/datatable/buttons/js/buttons.colVis.min.js' %}"></script>
+<script src="{%static '/vendors/datatable/buttons/js/buttons.flash.min.js' %}"></script>
+<script src="{%static '/vendors/datatable/buttons/js/buttons.html5.min.js' %}"></script>
+<script src="{%static '/vendors/datatable/buttons/js/buttons.print.min.js' %}"></script>
+<script src="{%static '/js/datatable.script.js' $}"></script>
+
+<style>
+.main {
+    padding: 20px;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#add-to-cart-form {
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+}
+
+#cart-table-body {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.table {
+    font-size: 14px;
+}
+
+#make-sale-button {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+}
+
+#cart-total {
+    font-weight: bold;
+    font-size: 18px;
+    color: #333;
+}
+
+.product-info img {
+    margin-right: 10px;
+}
+</style>
+
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<main>
+    <div class="container mx-auto px-4 py-8">
+        <!-- Checkout Header -->
+        <h1 class="text-3xl font-semibold mb-4">Checkout</h1>
+
+        <!-- Cart Items -->
+        <div class="bg-white rounded-lg shadow-md p-4">
+            <h2 class="text-xl font-semibold mb-4">Cart Items</h2>
+            <ul id="cartItems" class="mb-4">
+                <!-- Cart items will be added dynamically here -->
+            </ul>
+            <p class="mb-2 font-semibold">Total Price:</p>
+            <p id="totalPrice" class="text-xl font-semibold">KES 0.00</p>
+        </div>
+
+        <!-- Customer Information Form -->
+        <div class="bg-white rounded-lg shadow-md p-4">
+            <h2 class="text-xl font-semibold mb-4">Customer Information</h2>
+            <form id="customerForm">
+                <!-- Customer information fields -->
+                <button
+                    type="submit"
+                    class="px-4 py-2 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600"
+                >
+                    Checkout
+                </button>
+            </form>
+        </div>
+    </div>
+</main>
+
+<script src="{% static 'checkout.js' %}"></script>
+
+{% endblock %}

@@ -1,0 +1,308 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<main>
+    <div class="container-fluid site-width">
+        <div class="row">
+            <div class="col-12  align-self-center">
+                <div class="sub-header mt-3 py-3 align-self-center d-sm-flex w-100 rounded">
+                    <ol class="breadcrumb bg-transparent align-self-center m-0 p-0">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Products</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title" style="font-size: 20px;">
+                            <i class="fas fa-box mr-2"></i> Products List
+                        </h4>
+                        <input type="text" style="position: relative; border-radius: 30px;" id="searchInput"
+                            placeholder="Search...">
+                        <button type="button" class="btn btn-primary ml-2" data-toggle="modal"
+                            data-target="#addProductModal">
+                            <i class="fas fa-plus"></i> Add Product
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Price</th>
+                                    <th>Stock Quantity</th>
+                                    <th>Category</th>
+                                    <th>Subcategory</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in products %}
+                                <tr>
+                                    <td>
+                                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image"
+                                             style="max-width: 100px; max-height: 100px;">
+                                    </td>                                    
+                                    <td>{{ product.name }}</td>
+                                    <td>{{ product.description }}</td>
+                                    <td>kes {{ product.price }}</td>
+                                    <td>{{ product.stock_quantity }}</td>
+                                    <td>{{ product.category.name }}</td>
+                                    <td>{{ product.subcategory.name }}</td>
+                                    <td>
+                                        <button class="btn btn-secondary btn-sm edit-product-button"
+                                            data-product-id="{{ product.pk }}"
+                                            data-product-name="{{ product.name }}"
+                                            data-product-description="{{ product.description }}"
+                                            data-product-price="{{ product.price }}"
+                                            data-product-quantity="{{ product.stock_quantity }}"
+                                            data-product-category-id="{{ product.category.id }}"
+                                            data-product-subcategory-id="{{ product.subcategory.id }}">
+                                            Edit
+                                        </button>
+                                        <button class="btn btn-danger btn-sm delete-product-button"
+                                            data-product-id="{{ product.pk }}">
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+<!-- Add Product Modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProductModalLabel">Add Product</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" enctype="multipart/form-data" action="{% url 'create_product' %}" class="form">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="productName">Name</label>
+                        <input type="text" class="form-control" id="productName" name="name"
+                            placeholder="Enter product name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productDescription">Description</label>
+                        <textarea class="form-control" id="productDescription" name="description"
+                            placeholder="Enter product description" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="productPurchasePrice">Purchase Price</label>
+                        <input type="number" step="0.01" class="form-control" id="productPurchasePrice"
+                            name="purchase_price" placeholder="Enter purchase price" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productPrice">Price</label>
+                        <input type="number" step="0.01" class="form-control" id="productPrice" name="price"
+                            placeholder="Enter product price" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productQuantity">Stock Quantity</label>
+                        <input type="number" class="form-control" id="productQuantity" name="stock_quantity"
+                            placeholder="Enter stock quantity" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productCategory">Category</label>
+                        <select class="form-control" id="productCategory" name="category" required>
+                            <option value="">Select a category</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="productSubcategory">Subcategory</label>
+                        <select class="form-control" id="productSubcategory" name="subcategory" required>
+                            <option value="">Select a subcategory</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="productImage">Image</label>
+                        <input type="file" class="form-control-file" id="productImage" name="image" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Product</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+   <!-- Edit Product Modal -->
+    <div class="modal fade" id="editProductModal" tabindex="-1" role="dialog" aria-labelledby="editProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" enctype="multipart/form-data" id="editProductForm" class="form">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="editProductName">Name</label>
+                            <input type="text" class="form-control" id="editProductName" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editProductDescription">Description</label>
+                            <textarea class="form-control" id="editProductDescription" name="description" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="editProductPrice">Price</label>
+                            <input type="number" step="0.01" class="form-control" id="editProductPrice" name="price" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editProductQuantity">Stock Quantity</label>
+                            <input type="number" class="form-control" id="editProductQuantity" name="stock_quantity" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editProductCategory">Category</label>
+                            <select class="form-control" id="editProductCategory" name="category" required>
+                                <option value="">Select a category</option>
+                                {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editProductSubcategory">Subcategory</label>
+                            <select class="form-control" id="editProductSubcategory" name="subcategory" required>
+                                <option value="">Select a subcategory</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Delete Product Modal -->
+    <div class="modal fade" id="deleteProductModal" tabindex="-1" role="dialog"
+        aria-labelledby="deleteProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteProductModalLabel">Delete Product</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this product?</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="POST" id="deleteProductForm">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Function to open the edit modal and populate the form
+        $('.edit-product-button').click(function () {
+            var productId = $(this).data('product-id');
+            var productName = $(this).data('product-name');
+            var productDescription = $(this).data('product-description');
+            var productPrice = $(this).data('product-price');
+            var productQuantity = $(this).data('product-quantity');
+            var productCategoryId = $(this).data('product-category-id');
+            var productSubcategoryId = $(this).data('product-subcategory-id');
+
+            // Populate the form fields
+            $('#editProductForm').attr('action', '/update_product/' + productId + '/');
+            $('#editProductName').val(productName);
+            $('#editProductDescription').val(productDescription);
+            $('#editProductPrice').val(productPrice);
+            $('#editProductQuantity').val(productQuantity);
+            $('#editProductCategory').val(productCategoryId);
+            $('#editProductSubcategory').val(productSubcategoryId);
+            $('#editProductModal').modal('show');
+        });
+
+        // Function to open the delete modal
+        $('.delete-product-button').click(function () {
+            var productId = $(this).data('product-id');
+
+            $('#deleteProductForm').attr('action', '/delete_product/' + productId + '/');
+
+            $('#deleteProductModal').modal('show');
+        });
+
+        // Function to update subcategories based on the selected category
+        $('#productCategory').on('change', function () {
+            var categoryId = $(this).val();
+            var subcategorySelect = $('#productSubcategory');
+
+            // Clear the current subcategory options
+            subcategorySelect.empty();
+            subcategorySelect.append($('<option value="">Select a subcategory</option>'));
+
+            // Fetch subcategories based on the selected category using AJAX
+            $.ajax({
+                url: '{% url 'get_subcategories' %}',
+                type: 'GET',
+                data: { category_id: categoryId },
+                success: function (data) {
+                    // Populate the subcategory options
+                    $.each(data.subcategories, function (key, value) {
+                        subcategorySelect.append($('<option value="' + value.id + '">' + value.name + '</option>'));
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+<script src="{%static '/vendors/datatable/js/jquery.dataTables.min.js'%}"></script> 
+<script src="{%static '/vendors/datatable/js/dataTables.bootstrap4.min.js'%}"></script>
+<script src="{%static '/vendors/datatable/jszip/jszip.min.js' %}"></script>
+<script src="{%static '/vendors/datatable/pdfmake/pdfmake.min.js' %}"></script>
+<script src="{%static '/vendors/datatable/pdfmake/vfs_fonts.js' %}"></script>
+<script src="{%static '/vendors/datatable/buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{%static '/vendors/datatable/buttons/js/buttons.bootstrap4.min.js' %}"></script>
+<script src="{%static '/vendors/datatable/buttons/js/buttons.colVis.min.js' %}"></script>
+<script src="{%static '/vendors/datatable/buttons/js/buttons.flash.min.js' %}"></script>
+<script src="{%static '/vendors/datatable/buttons/js/buttons.html5.min.js' %}"></script>
+<script src="{%static '/vendors/datatable/buttons/js/buttons.print.min.js' %}"></script>
+<!-- END: Page Vendor JS-->
+
+<!-- START: Page Script JS-->        
+<script src="{%static '/js/datatable.script.js' $}"></script>
+
+</body>
+</html>
+{% endblock %}

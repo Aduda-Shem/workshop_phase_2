@@ -1,0 +1,35 @@
+version: '3.2'
+services:
+  workshop_database:
+    image: postgres:14-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME} 
+    ports:
+      - '5432:5432'
+    volumes:
+      - workshop_data:/var/lib/postgresql/workshop_data/data/
+
+  workshop_backend:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8005
+    ports:
+      - "8005:8005"
+    depends_on:
+      - workshop_database
+    tty: true
+    volumes:
+      - .:/code
+    environment:
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_HOST=${DATABASE_HOST}
+    env_file:
+      - '.env'
+
+volumes:
+  workshop_data:

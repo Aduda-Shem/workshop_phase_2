@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  .search-container {
+    margin-bottom: 20px;
+  }
+
+  #searchInput {
+    width: 300px;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Employee Management</a>
+</nav>
+
+<div class="container-fluid site-width">
+    <main>
+        <div class="row mt-4">
+            <div class="col-12 col-md-6 mx-auto">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="card-title">Add Employee</h6>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-body">
+                            <form method="POST" action="{% url 'create_employee' %}" class="form">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="employeeFirstName">First Name</label>
+                                    <input type="text" class="form-control" id="employeeFirstName" name="first_name"
+                                        placeholder="Enter first name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="employeeLastName">Last Name</label>
+                                    <input type="text" class="form-control" id="employeeLastName" name="last_name"
+                                        placeholder="Enter last name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="employeeEmail">Email</label>
+                                    <input type="email" class="form-control" id="employeeEmail" name="email"
+                                        placeholder="Enter email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="employeePhoneNumber">Phone Number</label>
+                                    <input type="text" class="form-control" id="employeePhoneNumber" name="phone_number"
+                                        placeholder="Enter phone number" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="employeeNationalID">National ID</label>
+                                    <input type="text" class="form-control" id="employeeNationalID" name="national_id"
+                                        placeholder="Enter national ID" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="employeeSalary">Salary</label>
+                                    <input type="text" class="form-control" id="employeeSalary" name="salary"
+                                        placeholder="Enter salary" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Add Employee</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+{% endblock %}
+</body>
+</html>

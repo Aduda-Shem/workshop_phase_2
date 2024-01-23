@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  .search-container {
+    margin-bottom: 20px;
+  }
+
+  #searchInput {
+    width: 300px;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Employee Management</a>
+</nav>
+
+<div class="container-fluid site-width">
+    <ul class="nav nav-tabs" id="employeeTabs">
+        <li class="nav-item">
+            <a class="nav-link active" id="view-tab" data-toggle="tab" href="#viewEmployees">View Employees</a>
+        </li>
+    </ul>
+
+    <main>
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="viewEmployees">
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h4 class="card-title" style="font-size: 20px;">
+                                    <i class="fas fa-users mr-2"></i>Employees List
+                                </h4>
+                                <input type="text" style="position: relative; border-radius: 30px;" id="searchInput"
+                                       placeholder="Search...">
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table id="employeeTable" class="table table-striped table-bordered">
+                                        <thead>
+                                        <tr class="table-primary">
+                                            <th style="font-size: 15px;">Employee Name</th>
+                                            <th style="font-size: 15px;">Email</th>
+                                            <th style="font-size: 15px;">Phone Number</th>
+                                            <th style="font-size: 15px;">National ID</th>
+                                            <th style="font-size: 15px;">Salary</th>
+                                            <th style="font-size: 15px;">Actions</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for employee in employees %}
+                                            <tr>
+                                                <td>{{ employee.first_name }} {{ employee.last_name }}</td>
+                                                <td>{{ employee.user.email }}</td>
+                                                <td>{{ employee.phone_number }}</td>
+                                                <td>{{ employee.national_id }}</td>
+                                                <td>{{ employee.salary }}</td>
+                                                <td>
+                                                    {% if employee.user.is_active %}
+                                                        <a href="{% url 'suspend_employee' employee.employee_id %}" class="btn btn-danger btn-sm">
+                                                            <i class="fas fa-times"></i> Suspend
+                                                        </a>
+                                                    {% else %}
+                                                        <a href="{% url 'activate_employee' employee.employee_id %}" class="btn btn-success btn-sm">
+                                                            <i class="fas fa-check"></i> Activate
+                                                        </a>
+                                                    {% endif %}
+                                                    <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#editEmployeeModal{{ employee.id }}">
+                                                        <i class="fas fa-edit"></i> Edit
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}                                            
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Edit Employee Modal -->
+{% for employee in employees %}
+<div class="modal fade" id="editEmployeeModal{{ employee.id }}" tabindex="-1" role="dialog" aria-labelledby="editEmployeeModalLabel{{ employee.id }}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editEmployeeModalLabel{{ employee.id }}">Edit Employee</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Add the form fields for editing employee details here -->
+                <!-- For example, you can use a Django form -->
+                <form method="post" action="{% url 'edit_employee' employee.employee_id %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="first_name">First Name</label>
+                        <input type="text" class="form-control" id="first_name" name="first_name" value="{{ employee.first_name }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="last_name">Last Name</label>
+                        <input type="text" class="form-control" id="last_name" name="last_name" value="{{ employee.last_name }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="last_name">E-mail</label>
+                        <input type="email" class="form-control" id="last_name" name="last_name" value="{{ employee.user.email }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="last_name">Phone Number</label>
+                        <input type="number" class="form-control" id="last_name" name="last_name" value="{{ employee.phone_number }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="last_name">Salary</label>
+                        <input type="number" class="form-control" id="last_name" name="last_name" value="{{ employee.salary }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- Add your other JavaScript scripts as needed -->
+
+{% endblock %}
+</body>
+</html>

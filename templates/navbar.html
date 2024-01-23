@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mark's City Enterprise</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        /* Additional custom styles can be added here */
+    </style>
+</head>
+
+<body id="main-container" class="bg-gray-100">
+    <!-- START: Pre Loader -->
+    <div class="se-pre-con">
+        <div class="loader"></div>
+    </div>
+    <!-- END: Pre Loader -->
+
+    <!-- START: Header -->
+    <div id="header-fix" class="header fixed-top bg-white shadow">
+        <div class="site-width">
+            <nav class="navbar navbar-expand-lg p-0">
+                <div class="navbar-header h-100 h4 mb-0 align-self-center logo-bar text-left">
+                    <a href="index.html" class="horizontal-logo text-left flex items-center">
+                        <i class="fas fa-city text-2xl"></i>
+                        <span class="h4 font-semibold align-self-center mb-0 ml-2">MACK CITY</span>
+                    </a>
+                </div>
+                <div class="navbar-header h4 mb-0 text-center h-100 collapse-menu-bar">
+                    <a href="#" class="sidebarCollapse" id="collapse">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </a>
+                </div>
+
+                <form class="float-left d-none d-lg-block search-form">
+                    <div class="form-group mb-0 position-relative">
+                        <a href="#" class="position-absolute close-button mobilesearch d-lg-none"
+                            data-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-times text-xl"></i>
+                        </a>
+                    </div>
+                </form>
+                <div class="navbar-right ml-auto h-100">
+                    <ul class="ml-auto p-0 m-0 list-unstyled d-flex top-icon h-100">
+                        <li class="d-inline-block align-self-center d-block d-lg-none">
+                            <a href="#" class="nav-link mobilesearch" data-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-search text-2xl"></i>
+                            </a>
+                        </li>
+
+                        <li class="dropdown align-self-center d-inline-block">
+                            <ul class="dropdown-menu dropdown-menu-right border py-0">
+                                <li><a class="dropdown-item text-center py-2" href="#">Read All Message <i
+                                            class="fas fa-arrow-right pl-2"></i></a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown user-profile align-self-center d-inline-block">
+                            <a href="{% url 'user_profile'%}" class="nav-link py-0" data-toggle="dropdown" aria-expanded="false">
+                                <div class="media">
+                                    <img src="/media/media/profile_pics/Screenshot_from_2023-09-28_15-22-53.png" alt=""
+                                        class="d-flex img-fluid rounded-circle" width="29">
+                                </div>
+                            </a>
+
+                            <div class="dropdown-menu border dropdown-menu-right p-0">
+                                <a href="{% url 'user_profile' %}" class="dropdown-item px-2 align-self-center d-flex">
+                                    <i class="fas fa-user mr-2 text-xl"></i> Profile</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="{% url 'logout' %}" class="dropdown-item px-2 text-danger align-self-center d-flex">
+                                    <i class="fas fa-sign-out-alt mr-2 text-xl"></i> Sign Out</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+    <!-- END: Header -->
+
+    <!-- START: Main Menu -->
+    {% if request.user.is_staff %}
+    <div class="sidebar">
+        <div class="site-width">
+            <ul id="side-menu" class="sidebar-menu">
+                <li class="dropdown"><a href="{% url 'dashboard' %}"><i class="fas fa-home mr-1 text-xl"></i>
+                        Dashboard</a>
+                    <ul>
+                        <li><a href="{% url 'dashboard' %}"><i class="fas fa-th text-xl"></i> Dashboard</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown"><a href="#"><i class="fas fa-cogs mr-1 text-xl"></i> Workshop</a>
+                    <ul>
+                        <li><a href="{% url 'category_list' %}"><i class="fas fa-th-list text-xl"></i> Category</a></li>
+                        <li><a href="{% url 'product_list' %}"><i class="fas fa-list text-xl"></i> Items</a></li>
+                        <li><a href="{% url 'pos_view' %}"><i class="fas fa-credit-card text-xl"></i> Sales</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown"><a href="#"><i class="fas fa-users mr-1 text-xl"></i> Suppliers</a>
+                    <ul>
+                        <li><a href="{% url 'supplier_list' %}"><i class="fas fa-user-plus text-xl"></i> Add Supplier</a></li>
+                        <li><a href="{% url 'supplier_list' %}"><i class="fas fa-users text-xl"></i> View Suppliers</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a href="#"><i class="fas fa-chart-bar mr-1 text-xl"></i> Reports</a>
+                    <ul>
+                        <li><a href="{% url 'stock_report' %}"><i class="fas fa-box text-xl"></i> Stock Report</a></li>
+                        <li><a href="{% url 'best_selling_product_report' %}"><i class="fas fa-chart-line text-xl"></i> Best Selling Product Report</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ol class="breadcrumb bg-transparent align-self-center m-0 p-0 ml-auto">
+                <li class="breadcrumb-item"><a href="#">Application</a></li>
+                <li class="breadcrumb-item active">Notes</li>
+            </ol>
+        </div>
+    </div>
+    <!-- END: Main Menu -->
+{% else %}
+    <!-- START: Main Menu (for non-staff users) -->
+    <div class="sidebar">
+        <div class="site-width">
+            <!-- START: Menu -->
+            <ul id="side-menu" class="sidebar-menu">
+                <li class="dropdown"><a href="{% url 'dashboard' %}"><i class="fas fa-home mr-1 text-xl"></i>
+                        Dashboard</a>
+                    <ul>
+                        <li><a href="{% url 'dashboard' %}"><i class="fas fa-th text-xl"></i> Dashboard</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown"><a href="#"><i class="fas fa-cogs mr-1 text-xl"></i> Workshop</a>
+                    <ul>
+                        <li><a href="{% url 'category_list' %}"><i class="fas fa-th-list text-xl"></i> Category</a></li>
+                        <li><a href="{% url 'product_list' %}"><i class="fas fa-list text-xl"></i> Items</a></li>
+                        <li><a href="{% url 'pos_view' %}"><i class="fas fa-credit-card text-xl"></i> Sales</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a href="#"><i class="fas fa-users mr-1 text-xl"></i> Employees</a>
+                    <ul>
+                        <li><a href="{% url 'create_employee' %}"><i class="fas fa-user-plus text-xl"></i> Add Employee</a></li>
+                        <li><a href="{% url 'employee_list' %}"><i class="fas fa-users text-xl"></i> View Employees</a></li>
+                    </ul>
+                </li>
+                
+
+                <li class="dropdown"><a href="#"><i class="fas fa-users mr-1 text-xl"></i> Suppliers</a>
+                    <ul>
+                        <li><a href="{% url 'supplier_list' %}"><i class="fas fa-user-plus text-xl"></i> Add Supplier</a></li>
+                        <li><a href="{% url 'supplier_list' %}"><i class="fas fa-users text-xl"></i> View Suppliers</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a href="#"><i class="fas fa-chart-bar mr-1 text-xl"></i> Reports</a>
+                    <ul>
+                        <li><a href="{% url 'stock_report' %}"><i class="fas fa-box text-xl"></i> Stock Report</a></li>
+                        <li><a href="{% url 'best_selling_product_report' %}"><i class="fas fa-chart-line text-xl"></i> Best Selling Product Report</a></li>
+                        <li><a href="{% url 'employee_performance_report' %}"><i class="fas fa-chart-bar text-xl"></i> Employee Performance</a></li>
+                        <li><a href="{% url 'product_sales_report' %}"><i class="fas fa-chart-bar text-xl"></i> product sales report </a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a href="#"><i class="fas fa-chart-bar mr-1 text-xl"></i> MarkCity's stat</a>
+                    <ul>
+                        <li><a href="{% url 'product_statistics' %}"><i class="fas fa-chart-line text-xl"></i> Statistics</a></li>
+                    </ul>
+                </li>                
+                
+            </ul>
+            <!-- END: Menu -->
+            <ol class="breadcrumb bg-transparent align-self-center m-0 p-0 ml-auto">
+                <li class="breadcrumb-item"><a href="#">Application</a></li>
+                <li class="breadcrumb-item active">Notes</li>
+            </ol>
+        </div>
+    </div>
+{% endif %}
+
+</body>
+
+</html>

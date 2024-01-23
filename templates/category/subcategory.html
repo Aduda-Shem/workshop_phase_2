@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main>
+    <div class="container-fluid site-width">
+        <div class="row">
+            <div class="col-12  align-self-center">
+                <div class="sub-header mt-3 py-3 align-self-center d-sm-flex w-100 rounded">
+                    <div class="w-sm-100 mr-auto">
+                        <h4 class="mb-0">{{ category.name }} Subcategories</h4>
+                    </div>
+
+                    <ol class="breadcrumb bg-transparent align-self-center m-0 p-0">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item"><a href="#">Category Management</a></li>
+                        <li class="breadcrumb-item active">{{ category.name }} Subcategories</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 mt-3">
+                <div class="card">
+                    <div class="card-header justify-content-between align-items-center">
+                        <h4 class="card-title">Subcategory List</h4>
+                        <a href="" class="btn btn-success btn-sm float-right" data-toggle="modal" data-target="#addSubcategoryModal">
+                            <i class="fas fa-plus"></i> Add Subcategory
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        {% if form_errors %}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                Please correct the following errors:
+                                <ul>
+                                    {% for error in form_errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        {% endif %}
+
+                        <div class="table-responsive">
+                            <table id="subcategoryTable" class="display table dataTable table-striped table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 30%;">Name</th>
+                                        <th style="width: 50%;">Description</th>
+                                        <th style="width: 20%;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for subcategory in subcategories %}
+                                        <tr>
+                                            <td>{{ subcategory.name }}</td>
+                                            <td>{{ subcategory.description }}</td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <!-- <button type="button" class="btn btn-primary btn-sm edit-button" data-toggle="modal" data-target="#editSubcategoryModal{{ subcategory.id }}">
+                                                        <i class="fas fa-edit"></i> Edit
+                                                    </button> -->
+                                                    <form method="post" action="{% url 'delete_subcategory' subcategory_id=subcategory.id %}">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-danger btn-sm">
+                                                            <i class="fas fa-trash-alt"></i> Delete
+                                                        </button>
+                                                    </form>
+                                                    
+                                                    
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Add Subcategory Modal -->
+<div class="modal fade" id="addSubcategoryModal" tabindex="-1" role="dialog" aria-labelledby="addSubcategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addSubcategoryModalLabel">Add Subcategory</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{% url 'add_subcategory' category_id=category.id %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="category" value="{{ category.id }}">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea class="form-control" id="description" name="description" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-block">Add Subcategory</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Edit Subcategory Modals -->
+{% for subcategory in subcategories %}
+<div class="modal fade" id="editSubcategoryModal{{ subcategory.id }}" tabindex="-1" role="dialog" aria-labelledby="editSubcategoryModalLabel{{ subcategory.id }}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editSubcategoryModalLabel{{ subcategory.id }}">Edit Subcategory - {{ subcategory.name }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{% url 'edit_subcategory' category_id=category.id subcategory_id=subcategory.id %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="_method" value="put">
+                    <div class="form-group">
+                        <label for="editName{{ subcategory.id }}">Name</label>
+                        <input type="text" class="form-control" id="editName{{ subcategory.id }}" name="name" value="{{ subcategory.name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDescription{{ subcategory.id }}">Description</label>
+                        <textarea class="form-control" id="editDescription{{ subcategory.id }}" name="description" required>{{ subcategory.description }}</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check"></i> Save Changes
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+
+{% endblock %}

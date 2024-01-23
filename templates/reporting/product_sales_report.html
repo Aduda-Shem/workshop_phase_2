@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<main>
+    <div class="container-fluid site-width">
+        <div class="row">
+            <div class="col-12" style="margin-top: 50px;">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center left">
+                        <h4 class="card-title" style="font-size: 20px;"><b>{{ report_title }}</b></h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <div class="text-center">
+                                <input type="text" id="searchInput" class="form-control mb-3" placeholder="Search">
+                                <form id="dateFilterForm" class="mb-3">
+                                    <div class="form-row">
+                                        <div class="col-md-6">
+                                            <label for="start_date">Start Date:</label>
+                                            <input type="date" class="form-control" id="start_date" name="start_date">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="end_date">End Date:</label>
+                                            <input type="date" class="form-control" id="end_date" name="end_date">
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary mt-2">Apply Date Range</button>
+                                </form>
+                            </div>
+                            <table id="example" class="display table dataTable table-striped table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th style="font-size: 15px;">Employee Name</th>
+                                        <th style="font-size: 15px;">Total Quantity Sold</th>
+                                        <th style="font-size: 15px;">Profit/Loss</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in data %}
+                                    <tr>
+                                        <th scope="row">{{ forloop.counter }}</th>
+                                        <td>{{ item.point_of_sale__seller__first_name }} {{ item.point_of_sale__seller__last_name }}</td>
+                                        <td>{{ item.total_quantity_sold }}</td>
+                                        <td>{{ item.profit_or_loss }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.10/css/jquery.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.0.1/css/buttons.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.10/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.0.1/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.html5.min.js"></script>
+<script>
+    $(document).ready(function() {
+        var table = $('#example').DataTable({
+            "paging": true,
+            "lengthChange": false,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+        });
+
+        $('#dateFilterForm').submit(function(e) {
+            e.preventDefault();
+            var start_date = $('#start_date').val();
+            var end_date = $('#end_date').val();
+            
+            $.ajax({
+                url: '{% url "product_sales_report" %}',
+                type: 'GET',
+                data: {
+                    'start_date': start_date,
+                    'end_date': end_date
+                },
+                success: function(data) {
+                    table.clear().rows.add(data.data).draw();
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
