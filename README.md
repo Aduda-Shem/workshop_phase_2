@@ -1,6 +1,4 @@
-<<<<<<< HEAD
 
-=======
 # Django workshop Project in Docker
 
 Django project that can be run inside a Docker container. Install Docker and Docker Compose.
@@ -33,4 +31,3 @@ Follow these steps to run the Django project in a Docker container:
 5. **creating superuser:**
    ```bash
    docker-compose exec web python manage.py createsuperuser
->>>>>>> b4523ffaa345fc9df0be58d3f6ef3a95a1ef6d5d
