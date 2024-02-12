@@ -12,7 +12,6 @@
                     <div class="card-body">
                         <div class="table-responsive">
                             <div class="text-center">
-                                <input type="text" id="searchInput" class="form-control mb-3" placeholder="Search">
                                 <form id="dateFilterForm" class="mb-3">
                                     <div class="form-row">
                                         <div class="col-md-6">
@@ -24,7 +23,6 @@
                                             <input type="date" class="form-control" id="end_date" name="end_date">
                                         </div>
                                     </div>
-                                    <button type="submit" class="btn btn-primary mt-2">Apply Date Range</button>
                                 </form>
                             </div>
                             <table id="example" class="display table dataTable table-striped table-bordered">
@@ -72,8 +70,7 @@
             "autoWidth": false,
         });
 
-        $('#dateFilterForm').submit(function(e) {
-            e.preventDefault();
+        $('#start_date, #end_date').change(function() {
             var start_date = $('#start_date').val();
             var end_date = $('#end_date').val();
             

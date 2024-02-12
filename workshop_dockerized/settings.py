@@ -36,6 +36,7 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0', '173.249.37.23']
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

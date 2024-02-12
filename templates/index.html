@@ -1,34 +1,31 @@
-{%load static%}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-
   <title>Mark City eCommerce Workshop</title>
   <meta content="" name="descriptison">
   <meta content="" name="keywords">
 
   <!-- Favicons -->
+  <link href="{% static 'images/favicon.png' %}" rel="icon">
 
-  <link href="static/images/favicon.png" rel="icon">
- 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Roboto:300,300i,400,400i,500,500i,700,700i&display=swap" rel="stylesheet">
 
   <!-- Vendor CSS Files -->
-  <link href="{%static '/vendor/bootstrap/css/bootstrap.min.css'%}" rel="stylesheet">
-  <link href="{%static '/vendor/animate.css/animate.min.css'%}" rel="stylesheet">
-  <link href="{%static '/vendor/icofont/icofont.min.css'%}" rel="stylesheet">
-  <link href="{%static '/vendor/boxicons/css/boxicons.min.css'%}" rel="stylesheet">
-  <link href="{%static '/vendor/venobox/venobox.css'%}" rel="stylesheet">
-  <link href="{%static '/vendor/owl.carousel/assets/owl.carousel.min.css'%}" rel="stylesheet">
-  <link href="{%static '/vendor/aos/aos.css'%}" rel="stylesheet">
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/animate.css/animate.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/icofont/icofont.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/venobox/venobox.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/owl.carousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/aos/aos.css' %}" rel="stylesheet">
 
   <!-- Template Main CSS File -->
-  <link href="{%static '/css/style.css'%}" rel="stylesheet">
-
+  <link href="{% static 'css/style.css' %}" rel="stylesheet">
 </head>
 
 <body>
@@ -38,13 +35,13 @@
     <div class="container">
 
       <div class="logo float-left">
-        <h1 class="text-light"><a href="{%url 'index'%}"><span><b>MarkCity - eCommerce Workshop</b></span></a></h1>
+        <h1 class="text-light"><a href="{% url 'index' %}"><span><b>MarkCity - eCommerce Workshop</b></span></a></h1>
       </div>
 
       <nav class="nav-menu float-right d-none d-lg-block">
         <ul>
-          <li class="active"><a href="{%url 'index'%}">Home</a></li>
-          <li><a href="{%url 'login'%}"> Login </a></li>
+          <li class="active"><a href="{% url 'index' %}">Home</a></li>
+          <li><a href="{% url 'login' %}">Login</a></li>
         </ul>
       </nav><!-- .nav-menu -->
 
@@ -52,7 +49,7 @@
   </header><!-- End Header -->
 
   <!-- ======= Hero Section ======= -->
-  <section id="hero" class="d-flex justify-cntent-center align-items-center">
+  <section id="hero" class="d-flex justify-content-center align-items-center">
     <div id="heroCarousel" class="container carousel carousel-fade" data-ride="carousel">
 
       <!-- Slide 1 -->
@@ -60,7 +57,7 @@
         <div class="carousel-container">
           <h2 class="animated fadeInDown">Welcome to <span>MarkCity - eCommerce Workshop</span></h2>
           <p class="animated fadeInUp">Explore our wide range of products and learn about the latest trends in eCommerce at MarkCity.</p>
-          <a href="{%url 'login'%}" class="btn-get-started animated fadeInUp">Get Started</a>
+          <a href="{% url 'login' %}" class="btn-get-started animated fadeInUp">Get Started</a>
         </div>
       </div>
 
@@ -69,7 +66,7 @@
         <div class="carousel-container">
           <h2 class="animated fadeInDown">Our Products</h2>
           <p class="animated fadeInUp">Discover an extensive collection of products, including electronics, fashion, home decor, and much more.</p>
-          <a href="{%url 'login'%}" class="btn-get-started animated fadeInUp">Get Started</a>
+          <a href="{% url 'login' %}" class="btn-get-started animated fadeInUp">Get Started</a>
         </div>
       </div>
 
@@ -78,7 +75,7 @@
         <div class="carousel-container">
           <h2 class="animated fadeInDown">Join Our Workshop</h2>
           <p class="animated fadeInUp">Become an eCommerce expert with our hands-on workshops, seminars, and training sessions.</p>
-          <a href="{%url 'login'%}" class="btn-get-started animated fadeInUp">Get Started</a>
+          <a href="{% url 'login' %}" class="btn-get-started animated fadeInUp">Get Started</a>
         </div>
       </div>
 
@@ -96,89 +93,81 @@
   </section><!-- End Hero -->
 
   <main id="main">
-
-<!-- ======= Services Section ======= -->
-<section id="services" class="services">
-    <div class="container">
-        <h3 class="title"><a href="">Our Services</a></h3>
-  
-      <div class="row">
-        <div class="col-md-6 col-lg-3 d-flex align-items-stretch" data-aos="fade-up">
-          <div class="icon-box icon-box-blue">
-            <div class="icon"><i class="bx bx-user"></i></div>
-            <h4 class="title"><a href="#">Easy Shopping Experience</a></h4>
-            <p class="description">Enjoy a seamless shopping experience with our user-friendly interface and secure checkout process.</p>
+    <!-- ======= Services Section ======= -->
+    <section id="services" class="services">
+      <div class="container">
+        <h3 class="title"><a href="#">Our Services</a></h3>
+        <div class="row">
+          <div class="col-md-6 col-lg-3 d-flex align-items-stretch" data-aos="fade-up">
+            <div class="icon-box icon-box-blue">
+              <div class="icon"><i class="bx bx-user"></i></div>
+              <h4 class="title"><a href="#">Easy Shopping Experience</a></h4>
+              <p class="description">Enjoy a seamless shopping experience with our user-friendly interface and secure checkout process.</p>
+            </div>
           </div>
-        </div>
-  
-        <div class="col-md-6 col-lg-3 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="100">
-          <div class="icon-box icon-box-cyan">
-            <div class="icon"><i class="bx bx-time"></i></div>
-            <h4 class="title"><a href="#">Fast Delivery</a></h4>
-            <p class="description">Get your orders delivered quickly and efficiently to your doorstep.</p>
+          <div class="col-md-6 col-lg-3 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="100">
+            <div class="icon-box icon-box-cyan">
+              <div class="icon"><i class="bx bx-time"></i></div>
+              <h4 class="title"><a href="#">Fast Delivery</a></h4>
+              <p class="description">Get your orders delivered quickly and efficiently to your doorstep.</p>
+            </div>
           </div>
-        </div>
-  
-        <div class="col-md-6 col-lg-3 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="200">
-          <div class="icon-box icon-box-green">
-            <div class="icon"><i class="bx bx-message-dots"></i></div>
-            <h4 class="title"><a href="#">Customer Support</a></h4>
-            <p class="description">We provide excellent customer support to assist you with any inquiries or issues.</p>
+          <div class="col-md-6 col-lg-3 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="200">
+            <div class="icon-box icon-box-green">
+              <div class="icon"><i class="bx bx-message-dots"></i></div>
+              <h4 class="title"><a href="#">Customer Support</a></h4>
+              <p class="description">We provide excellent customer support to assist you with any inquiries or issues.</p>
+            </div>
           </div>
-        </div>
-  
-        <div class="col-md-6 col-lg-3 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="300">
-          <div class="icon-box icon-box-blue">
-            <div class="icon"><i class="bx bx-analyse"></i></div>
-            <h4 class="title"><a href="#">Analytics and Insights</a></h4>
-            <p class="description">Gain valuable insights into your eCommerce business with our analytics and reporting tools.</p>
-          </div>
-        </div>
-  
-      </div>
-  
-    </div>
-  </section><!-- End Services Section -->
-  
-
-  <section class="why-us" id="about">
-    <div class="container">
-        <h4 class="title"><a href="">Why Us</a></h4>
-      <div class="row">
-        <div class="col-lg-6 d-flex flex-column justify-content-center p-5">
-          <div class="icon-box">
-            <div class="icon"><i class="bx bx-key"></i></div>
-            <h4 class="title"><a href="">Expert Instructors</a></h4>
-            <p class="description">Our workshops are led by experienced instructors who are experts in the field of eCommerce.</p>
-          </div>
-        </div>
-        <div class="col-lg-6 d-flex flex-column justify-content-center p-5">
-          <div class="icon-box">
-            <div class="icon"><i class="bx bx-shield"></i></div>
-            <h4 class="title"><a href="">Comprehensive Curriculum</a></h4>
-            <p class="description">Our workshop curriculum covers everything you need to know to succeed in the eCommerce industry.</p>
+          <div class="col-md-6 col-lg-3 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="300">
+            <div class="icon-box icon-box-blue">
+              <div class="icon"><i class="bx bx-analyse"></i></div>
+              <h4 class="title"><a href="#">Analytics and Insights</a></h4>
+              <p class="description">Gain valuable insights into your eCommerce business with our analytics and reporting tools.</p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </section><!-- End Why Us Section -->
+    </section><!-- End Services Section -->
 
+    <!-- ======= Why Us Section ======= -->
+    <section class="why-us" id="about">
+      <div class="container">
+        <h4 class="title"><a href="#">Why Us</a></h4>
+        <div class="row">
+          <div class="col-lg-6 d-flex flex-column justify-content-center p-5">
+            <div class="icon-box">
+              <div class="icon"><i class="bx bx-key"></i></div>
+              <h4 class="title"><a href="#">Expert Instructors</a></h4>
+              <p class="description">Our workshops are led by experienced instructors who are experts in the field of eCommerce.</p>
+            </div>
+          </div>
+          <div class="col-lg-6 d-flex flex-column justify-content-center p-5">
+            <div class="icon-box">
+              <div class="icon"><i class="bx bx-shield"></i></div>
+              <h4 class="title"><a href="#">Comprehensive Curriculum</a></h4>
+              <p class="description">Our workshop curriculum covers everything you need to know to succeed in the eCommerce industry.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section><!-- End Why Us Section -->
   </main><!-- End #main -->
   <a href="#" class="back-to-top"><i class="icofont-simple-up"></i></a>
 
   <!-- Vendor JS Files -->
-  <script src="{%static '/vendor/jquery/jquery.min.js'%}"></script>
-  <script src="{%static '/vendor/bootstrap/js/bootstrap.bundle.min.js'%}"></script>
-  <script src="{%static '/vendor/jquery.easing/jquery.easing.min.js'%}"></script>
-  <script src="{%static '/vendor/venobox/venobox.min.js'%}"></script>
-  <script src="{%static '/vendor/waypoints/jquery.waypoints.min.js'%}"></script>
-  <script src="{%static '/vendor/counterup/counterup.min.js'%}"></script>
-  <script src="{%static '/vendor/owl.carousel/owl.carousel.min.js'%}"></script>
-  <script src="{%static '/vendor/isotope-layout/isotope.pkgd.min.js'%}"></script>
-  <script src="{%static '/vendor/aos/aos.js'%}"></script>
+  <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'vendor/jquery.easing/jquery.easing.min.js' %}"></script>
+  <script src="{% static 'vendor/venobox/venobox.min.js' %}"></script>
+  <script src="{% static 'vendor/waypoints/jquery.waypoints.min.js' %}"></script>
+  <script src="{% static 'vendor/counterup/counterup.min.js' %}"></script>
+  <script src="{% static 'vendor/owl.carousel/owl.carousel.min.js' %}"></script>
+  <script src="{% static 'vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
+  <script src="{% static 'vendor/aos/aos.js' %}"></script>
 
   <!-- Template Main JS File -->
-  <script src="{%static '/js/main.js'%}"></script>
+  <script src="{% static 'js/main.js' %}"></script>
 
 </body>
 
