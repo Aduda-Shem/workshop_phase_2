@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 from ecommerce.models import Category, Product, SaleRecord
+import threading
 
 from users.forms import CustomPasswordResetForm, EmployeeForm, LoginForm, SupplierForm
 from .models import Company, Employee, Supplier, User
@@ -52,6 +53,10 @@ from django.contrib.auth.tokens import default_token_generator
 
 
 
+# Home
+def IndexView(request):
+    context = {}
+    return render(request, 'index.html', context)
 
 # Authentication Views
 def login(request):
@@ -192,7 +197,7 @@ class SupplierListView(TemplateView):
             company_name = data.get('company', None)
             if company_name:
                 company, created = Company.objects.get_or_create(name=company_name)
-                form.instance.company = company
+                form.idashboardnstance.company = company
 
             form.save()
             return redirect('supplier_list') 
@@ -254,6 +259,19 @@ class SupplierEditView(LoginRequiredMixin, View):
         return render(request, self.template_name, context)
     
 
+
+def send_welcome_email(employee, password):
+    subject = 'Welcome to Our Company'
+    context = {
+        'employee': employee,
+        'password': password,
+    }
+    html_message = render_to_string('email/welcome_email_template.html', context)
+    plain_message = strip_tags(html_message)
+    from_email = 'noreply@netbotgroup.com'
+    to_email = employee.user.email
+    send_mail(subject, plain_message, from_email, [to_email], html_message=html_message)
+
 @login_required
 def create_employee(request):
     if request.method == 'POST':
@@ -283,22 +301,11 @@ def create_employee(request):
             )
             employee.save()
 
-            subject = 'Welcome to Our Company'
+            email_thread = threading.Thread(target=send_welcome_email, args=(employee, password))
+            email_thread.start()
 
-            context = {
-                'employee': employee,
-                'password': password,
-            }
-
-            html_message = render_to_string('email/welcome_email_template.html', context)
-            plain_message = strip_tags(html_message)
-            from_email = 'noreply@netbotgroup.com'
-            to_email = user.email
-
-            send_mail(subject, plain_message, from_email, [to_email], html_message=html_message)
-
-            messages.success(request, 'Employee created successfully, and a welcome email has been sent.')
-            return redirect('create_employee')
+            messages.success(request, 'Employee created successfully, and a welcome email will be sent shortly.')
+            return redirect('employee_list')
         else:
             print("Form is not valid:", employee_form.errors)
     else:

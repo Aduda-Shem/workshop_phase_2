@@ -5,14 +5,14 @@
 <main>
     <div class="container-fluid site-width">
         <div class="row">
-            <div class="col-12  align-self-center">
-                <div class="sub-header mt-3 py-3 align-self-center d-sm-flex w-100 rounded">
-                    <div class="w-sm-100 mr-auto">
+            <div class="col-12 mt-3">
+                <div class="sub-header py-3 align-items-center d-flex justify-content-between rounded">
+                    <div>
                         <h4 class="mb-0">Category Management</h4>
                         <p>Welcome, {{ user.first_name }}</p>
                     </div>
 
-                    <ol class="breadcrumb bg-transparent align-self-center m-0 p-0">
+                    <ol class="breadcrumb m-0 p-0">
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
                         <li class="breadcrumb-item active">Category Management</li>
                     </ol>
@@ -23,9 +23,9 @@
         <div class="row">
             <div class="col-12 mt-3">
                 <div class="card">
-                    <div class="card-header justify-content-between align-items-center">
+                    <div class="card-header d-flex justify-content-between align-items-center">
                         <h4 class="card-title">Category List</h4>
-                        <button type="button" class="btn btn-success btn-sm float-right" data-toggle="modal" data-target="#addCategoryModal">
+                        <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#addCategoryModal">
                             <i class="fas fa-plus"></i> Add Category
                         </button>
                     </div>
@@ -44,8 +44,8 @@
                                     <tr>
                                         <th>Name</th>
                                         <th>Description</th>
-                                        <th>Actions</th>
                                         <th>Subcategories</th> 
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -54,7 +54,12 @@
                                         <td>{{ category.name }}</td>
                                         <td>{{ category.description }}</td>
                                         <td>
-                                            <div class="d-flex justify-content-between">
+                                            <a href="{% url 'subcategory_category' category.id %}" class="btn btn-info btn-sm">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
                                                 <button type="button" class="btn btn-primary btn-sm edit-button" data-toggle="modal" data-target="#editCategoryModal{{ category.id }}">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
@@ -62,18 +67,13 @@
                                                 <form method="post" action="{% url 'delete_category' category.id %}">
                                                     {% csrf_token %}
                                                     <input type="hidden" name="action" value="delete">
-                                                    <button type="submit" class="btn btn-danger btn-sm">
+                                                    <button type="submit" class="btn btn-danger btn-sm ml-2">
                                                         <i class="fas fa-trash-alt"></i>
                                                     </button>
                                                 </form>
-                                                
                                             </div>
                                         </td>
-                                        <td>
-                                            <a href="{% url 'subcategory_category' category.id %}" class="btn btn-info btn-sm">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                        </td>
+                              
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -81,8 +81,8 @@
                                     <tr>
                                         <th>Name</th>
                                         <th>Description</th>
-                                        <th>Actions</th>
                                         <th>View Subcategories</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -169,10 +169,4 @@
     });
 </script>
 
-<style>
-    .edit-button {
-        margin-right: 5px;
-        font-size: 12px;
-    }
-</style>
 {% endblock %}
