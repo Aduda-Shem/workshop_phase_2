@@ -1,36 +1,42 @@
 version: '3.2'
+
 services:
-  workshop_database:
-    image: postgres:14-alpine
-    restart: unless-stopped
-    environment:
-      - POSTGRES_HOST_AUTH_METHOD=trust
-      - POSTGRES_USER=${DATABASE_USER}
-      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
-      - POSTGRES_DB=${DATABASE_NAME} 
-    ports:
-      - '5432:5432'
+  db:
+    image: postgres:15
     volumes:
-      - workshop_data:/var/lib/postgresql/workshop_data/data/
+      - postgres_data:/var/lib/postgresql/workshop/data/
+    environment:
+      - POSTGRES_USER=workshop
+      - POSTGRES_PASSWORD=workshop
+      - POSTGRES_DB=workshop
+    ports:
+      - 5433:5432
     restart: unless-stopped
 
-  workshop_backend:
-    build: .
-    command: python manage.py runserver 0.0.0.0:8005
-    ports:
-      - "8005:8005"
-    depends_on:
-      - workshop_database
-    tty: true
-    volumes:
-      - .:/code
+  pgadmindb:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    restart: unless-stopped 
     environment:
-      - POSTGRES_USER=${DATABASE_USER}
-      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
-      - POSTGRES_DB=${DATABASE_NAME}
-      - POSTGRES_HOST=${DATABASE_HOST}
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:9000
+    volumes:
+      - .:/app/backend
+    ports:
+      - 9000:9000
     env_file:
-      - '.env'
-    restart: unless-stopped
+      - .env
+    depends_on:
+      - db
+    restart: unless-stopped  
+
 volumes:
-  workshop_data:
+  postgres_data:
