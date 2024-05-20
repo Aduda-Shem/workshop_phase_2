@@ -69,7 +69,7 @@ ROOT_URLCONF = 'workshop_dockerized.urls'
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'BACKEND': 'djano.template.backends.django.DjangoTemplates',
         "DIRS": [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -88,17 +88,27 @@ WSGI_APPLICATION = 'workshop_dockerized.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+#DATABASES = {
+ #   "default": {
+ #       "ENGINE": env("DB_ENGINE"),
+ #       "NAME": env("POSTGRES_DB"),
+ #       "USER": env("POSTGRES_USER"),
+#        "PASSWORD": env("POSTGRES_PASSWORD"),
+#        "HOST": env("HOST"),
+#        "PORT": env("PORT"),
+#    }
+#}
+
 DATABASES = {
-    "default": {
-        "ENGINE": env("DB_ENGINE"),
-        "NAME": env("POSTGRES_DB"),
-        "USER": env("POSTGRES_USER"),
-        "PASSWORD": env("POSTGRES_PASSWORD"),
-        "HOST": env("HOST"),
-        "PORT": env("PORT"),
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'workshop',
+        'USER': 'workshop',
+        'PASSWORD': 'workshop',
+        'HOST': 'localhost',  
+        'PORT': '5433',
     }
 }
-
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
@@ -121,7 +131,6 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
 
 USE_I18N = True

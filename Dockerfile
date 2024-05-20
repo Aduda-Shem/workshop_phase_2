@@ -25,4 +25,4 @@ RUN chmod +x /app/backend/entrypoint.sh
 COPY . /app/backend/
 
 # Set the entry point
-ENTRYPOINT ["/app/backend/entrypoint.sh"]
+#ENTRYPOINT ["/app/backend/entrypoint.sh"]
