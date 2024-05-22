@@ -14,7 +14,7 @@ services:
     restart: unless-stopped
 
   pgadmindb:
-    container_name: pgadmin
+    container_name: pgadminworkshop
     image: dpage/pgadmin4
     restart: unless-stopped 
     environment:
